@@ -1,7 +1,10 @@
+body {
+    background: grey;
+}
+
 canvas {
     margin-top: 40px;
     background: #c2c2c2;
-    margin-left: auto;
 }
 
 

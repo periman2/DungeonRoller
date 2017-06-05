@@ -1,8 +1,8 @@
-export const PLAYER_POS_CHANGE = 'PLAYER_POS_CHANGE'
+export const PLAYER_INFO_CHANGE = 'PLAYER_INFO_CHANGE'
 
-export function changePlayerPosition(position) {
+export function changePlayerInfo(info) {
     return {
-        type: PLAYER_POS_CHANGE,
-        payload: position
+        type: PLAYER_INFO_CHANGE,
+        payload: info
     }
 }
