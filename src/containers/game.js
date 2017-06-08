@@ -16,7 +16,6 @@ class Game extends Component {
         this.findIfNotInside = this.findIfNotInside.bind(this);
         this.buildPaths = this.buildPaths.bind(this);
         this.findConnectedRooms = this.findConnectedRooms.bind(this);
-        this.drawCoridor = this.drawCoridor.bind(this);
         this.makeCorridors = this.makeCorridors.bind(this);
         this.mergeCorridors = this.mergeCorridors.bind(this);
         this.getInitialPosition = this.getInitialPosition.bind(this);
@@ -31,18 +30,19 @@ class Game extends Component {
 
         const width = this.props.gameInfo.canvasWidth;
         const height = this.props.gameInfo.canvasHeight;
-        // console.log(this.props.player);
         let CorWidth = this.props.gameInfo.coredorWidth;
         let dim = {
             x: this.props.player.position.x,
             y: this.props.player.position.y,
             r: this.props.gameInfo.radius
         }
+        
         ctx.beginPath();
         ctx.arc(dim.x, dim.y, dim.r, 0, 2 * Math.PI);
         ctx.fillStyle = 'red';
         ctx.fill();
         ctx.closePath();
+        console.log('this is the player', this.props.player)
     }
     buildRooms(){
         let ctx = this.getCanvas();
@@ -68,14 +68,13 @@ class Game extends Component {
                     newRoom.index = roomIndex;
                     newRoom.type = 'room';
                     rooms.push(newRoom);
-                    this.drawBox(ctx, newRoom);
                     roomIndex ++;
                 }
             } else {
                 //if there is no room craeted then create one
                 newRoom.index = roomIndex;
+                newRoom.type = 'room';
                 rooms.push(newRoom);
-                this.drawBox(ctx, newRoom);
                 roomIndex ++;
             }
         }
@@ -90,67 +89,6 @@ class Game extends Component {
         this.getInitialPosition(level);
         return rooms;
     }
-    getInitialPosition(level){
-        let rooms = level.rooms;
-        let paths = level.paths;
-        let randomRoomIndex = Math.ceil((rooms.length - 1) * Math.random());
-        let randRoom = rooms[randomRoomIndex];
-        console.log('random room', randRoom)
-        let connected = this.getNeighbors(randRoom, paths, rooms);
-        // Tests Here
-        // console.log('these are the neighboors of ', connected[0], this.getNeighbors(connected[0], paths, rooms))
-        // console.log('corridors that connect to a room',connected);
-        let X = randRoom.X + randRoom.boxWidth / 2;
-        let Y = randRoom.Y + randRoom.boxHeight / 2;
-        let rad = this.props.gameInfo.radius;
-        let corners  = {
-            UL: {X: X - rad, Y: Y - rad},
-            UR: {X: X + rad, Y: Y - rad},
-            DR: {X: X + rad, Y: Y + rad},
-            DL: {X: X - rad, Y: Y + rad}
-        }
-        this.props.changePlayerInfo({
-            location: {place: randomRoomIndex, type: 'room'},
-            position : {
-                x: X, 
-                y: Y
-            },
-            corners: corners,
-            currentTexture: this.props.gameInfo.roomColor,
-            level: 0,
-            angle: 0,
-            velocity: 0,
-            acceleration: 0,
-            radius: this.props.gameInfo.radius,
-            neighbors: connected
-        });
-    }
-    //troubleshoot this later
-    getNeighbors(location, paths, rooms){
-        let connected = [];
-        if(location.type === 'room'){
-            connected = paths.filter(function(cor){return cor.connects.indexOf(location.index) !== -1});
-        } else {
-            let neightborCor = paths.filter(function(cor){
-                if(this.checkOverlappingCorredors(cor, location) === true || this.checkOverlappingCorredors(location, cor) === true){
-                    return cor;
-                }
-            }.bind(this))
-            let neighborRooms = rooms.filter(function(room){
-                return room.index === location.connects[0] || room.index === location.connects[1];
-            })
-            connected = neightborCor.concat(neighborRooms);
-        }
-        return connected;
-    }
-    checkOverlappingCorredors(cor1, cor2){
-        let c = cor1.corners;
-        let c2 = cor2.corners;
-        if(( (c.DL.X > c2.DL.X ) && (c.DR.X < c2.DR.X)) && ((c2.UL.Y > c.UL.Y ) && (c2.DL.Y < c.DL.Y))){
-            return true;
-        }
-        return false;
-    }
     buildPaths(rooms, width, height){
         let corridorsH = [];
         let corridorsV = [];
@@ -164,7 +102,6 @@ class Game extends Component {
             let findConnectionsH = this.findConnectedRooms(rangeH, rooms, 'Y');
             corridorsH = corridorsH.concat(findConnectionsH);
         }
-        // console.log(corridorsH);
         for(let j = 0; j <= divW; j ++){
             let rangeV = {};
             rangeV.X1 = j * coredorWidth;
@@ -172,24 +109,14 @@ class Game extends Component {
             let findConnectionsV = this.findConnectedRooms(rangeV, rooms, 'X');
             corridorsV = corridorsV.concat(findConnectionsV);
         }
-        // console.log(corridorsV);
         corridorsH = this.mergeCorridors(corridorsH, 'Y');
         corridorsV = this.mergeCorridors(corridorsV, 'X');
         let allCorredors = corridorsH.concat(corridorsV);
-        // set indeces and types for corridors
         allCorredors = allCorredors.map(function(cor, i){
             cor.index = i;
             cor.type = 'corridor';
             return cor
         });
-        // console.log('these are all the corredors', allCorredors);
-        // temporary drawing;
-        corridorsV.map(function(cor){
-            this.drawCoridor(cor);
-        }.bind(this))
-        corridorsH.map(function(cor){
-            this.drawCoridor(cor);
-        }.bind(this))
         return allCorredors;
     }
     mergeCorridors(cor, orient){
@@ -307,17 +234,17 @@ class Game extends Component {
         }
         return corridors;
     }
-    drawCoridor(room){
+    drawBox(box){
         const ctx = this.getCanvas();
         if(!ctx){
             return null;
         }
-        ctx.fillStyle = this.props.gameInfo.corredorColor
-        ctx.fillRect(room.X, room.Y, room.boxWidth, room.boxHeight);
-    }
-    drawBox(ctx, room){
-        ctx.fillStyle = this.props.gameInfo.roomColor;
-        ctx.fillRect(room.X, room.Y, room.boxWidth, room.boxHeight);
+        if(box.type === 'room'){
+            ctx.fillStyle = this.props.gameInfo.roomColor;
+        } else {
+            ctx.fillStyle = this.props.gameInfo.corredorColor
+        }
+        ctx.fillRect(box.X, box.Y, box.boxWidth, box.boxHeight);
     }
     checkOverlap(newRoom, rooms, width, height){
         let cornersOfNewRoom = this.getAllCorners(newRoom);
@@ -365,8 +292,11 @@ class Game extends Component {
     }
     checkOneCorner(c, c2, corner){
         //set minimum distance between boxes and then check for overlap
-        let minDist = 10;
-        if(((c2.UL.X - minDist <= c[corner].X ) && (c[corner].X  <= (c2.UR.X + minDist))) && ((c2.UL.Y - minDist <= c[corner].Y ) && (c[corner].Y  <= (c2.DL.Y + minDist)))){
+        let minDist = 25;
+        if(((c2.UL.X - minDist <= c[corner].X ) 
+        && (c[corner].X  <= (c2.UR.X + minDist))) 
+        && ((c2.UL.Y - minDist <= c[corner].Y ) 
+        && (c[corner].Y  <= (c2.DL.Y + minDist)))){
             return false;
         }
         return true;
@@ -395,46 +325,129 @@ class Game extends Component {
         const ctx = canvas.getContext("2d");
         return ctx;
     }
+    getNeighbors(location, paths, rooms){
+        let connected = [];
+        if(location.type === 'room'){
+            connected = paths.filter(function(cor){return cor.connects.indexOf(location.index) !== -1});
+        } else {
+            // console.log('location: ', location)
+            let neightborCor = paths.filter(function(cor){
+                if(this.checkOverlappingCorredors(cor, location) === true || this.checkOverlappingCorredors(location, cor) === true){
+                    return true;
+                }
+                return false
+            }.bind(this))
+            let neighborRooms = rooms.filter(function(room){
+                return room.index === location.connects[0] || room.index === location.connects[1];
+            });
+            
+            connected = neightborCor.concat(neighborRooms);
+        }
+        return connected;
+    }
+    checkOverlappingCorredors(cor1, cor2){
+        let c = cor1.corners;
+        let c2 = cor2.corners;
+        if(( (c.DL.X > c2.DL.X ) && (c.DR.X < c2.DR.X)) && ((c2.UL.Y > c.UL.Y ) && (c2.DL.Y < c.DL.Y))){
+            return true;
+        }
+        return false;
+    }
+    getInitialPosition(level){
+        let rooms = level.rooms;
+        let paths = level.paths;
+        let randomRoomIndex = Math.ceil((rooms.length - 1) * Math.random());
+        let randRoom = rooms[randomRoomIndex];
+        console.log('random room', randRoom)
+        let neighbors = this.getNeighbors(randRoom, paths, rooms);
+        //INITIALIZE DRAWING
+        neighbors.map(function(n){
+            this.drawBox(n);
+        }.bind(this))
+        this.drawBox(randRoom);
+
+        let X = randRoom.X + randRoom.boxWidth / 2;
+        let Y = randRoom.Y + randRoom.boxHeight / 2;
+        let rad = this.props.gameInfo.radius;
+        this.props.changePlayerInfo({
+            location: randRoom,
+            position : {
+                x: X, 
+                y: Y
+            },
+            currentTexture: this.props.gameInfo.roomColor,
+            level: 0,
+            angle: 0,
+            velocity: 1.5,
+            deceleration: 0.2,
+            radius: this.props.gameInfo.radius,
+            neighbors: neighbors
+        });
+    }
     handleKeyDown(ev) {
         const ctx = this.getCanvas();
         const key = ev.key;
-        var position = this.props.player.position;
-        //This will update according to velocit and acceleration in the future too
-        let currentPlace = {};
-        if(this.props.player.location.type === 'room'){
-            currentPlace = this.props.levels[0].rooms.filter(function(room){return room.index === this.props.player.location.place}.bind(this))
-            // console.log(currentPlace);
-            this.drawBox(ctx, currentPlace[0]);
+        let level = this.props.levels[0];
+        let neighbors = this.props.player.neighbors;
+        // draw the current location and all the neighboors
+        let currentPlace = this.props.player.location;
+        let player = JSON.parse(JSON.stringify(this.props.player));
+        this.drawBox(currentPlace);
+        let action = {
+            player: player,
+            key: 'start', 
+            currentPlace: currentPlace, 
+            level: level,
+            pressed: false
+        }
+        let action2 = {
+            player: this.props.player,
+            currentPlace: this.props.player.location, 
+            level: this.props.levels[0],
+            key: ev.key,
+            pressed: true
+        }  
+             
+        if(this.props.player.velocity > 0){
+            // let inter = setInterval(() => {
+            var requestAnimationFrame = window.requestAnimationFrame;
+            var cancelAnimationFrame = window.cancelAnimationFrame;
+            var animateBall = () =>  {
+                 
+                ctx.clearRect(0, 0, this.props.gameInfo.canvasWidth, this.props.gameInfo.canvasHeight);
+                let currentPlace = this.props.player.location;
+                this.props.player.neighbors.map((n) => {
+                    if(n.type === 'room'){
+                        ctx.clearRect(n.X, n.Y, n.boxWidth, n.boxHeight)
+                        this.drawBox(n);
+                    } else {
+                        if(currentPlace.type !== 'corridor'){
+                            ctx.clearRect(n.X, n.Y, n.boxWidth, n.boxHeight)
+                            this.drawBox(n);
+                        }
+                    }
+                });
+
+                this.drawBox(currentPlace);
+                // console.log('velocity hereeeee', this.props.player.velocity);
+                if(this.props.player.velocity === 0){
+                    // clearInterval(inter);
+                    cancelAnimationFrame(myFrame);
+                    this.props.changePlayerInfo(action);
+                    return;
+                } else {
+                    this.props.changePlayerInfo(action2); 
+                }
+            // }, 20);
+                var myFrame = requestAnimationFrame(animateBall);
+            };
+            animateBall();
         } else {
-            // FOR THE CORRIDORS I ALSO NEED TO CHECK IF THERE ARE OVERLAPING ONES
-            currentPlace = this.props.levels[0].paths.filter(function(cor){return cor.index === this.props.player.location.place}.bind(this));
-            this.drawCoridor(currentPlace[0]);
+            this.props.changePlayerInfo(action);
         }
-        let player = this.props.player;
-        console.log(currentPlace);
-        this.props.changePlayerInfo({player: player, amount: 4, key: key, currentPlace: currentPlace[0]});
+
+        // frame = requestAnimationFrame(animateBall);
     }
-    filterUpdatedPosition(newPos){
-        // let position = this.props.player.position;
-        // console.log(position, newPos);
-    }
-    updatePosition(position, amount, key){
-        let newPos = position;
-        switch(key){
-            case 'ArrowUp':
-            newPos.y -= amount;
-            break
-            case 'ArrowDown':
-            newPos.y += amount;
-            break
-            case 'ArrowLeft':
-            newPos.x -= amount;
-            break
-            case 'ArrowRight':
-            newPos.x += amount;
-        }
-        return newPos;
-    }    
     componentDidMount(){
         this.buildRooms();
         document.addEventListener("keydown", this.handleKeyDown, false);
