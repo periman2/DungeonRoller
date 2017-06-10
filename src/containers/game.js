@@ -36,13 +36,13 @@ class Game extends Component {
             y: this.props.player.position.y,
             r: this.props.gameInfo.radius
         }
-        
+        let fill = this.props.player.currentTexture;
         ctx.beginPath();
         ctx.arc(dim.x, dim.y, dim.r, 0, 2 * Math.PI);
-        ctx.fillStyle = 'red';
+        ctx.fillStyle = fill;
         ctx.fill();
         ctx.closePath();
-        console.log('this is the player', this.props.player)
+        // console.log('this is the player', this.props.player)
     }
     buildRooms(){
         let ctx = this.getCanvas();
@@ -80,14 +80,55 @@ class Game extends Component {
         }
         // Build the coridors that connect the boxes
         let paths = this.buildPaths(rooms, width, height);
-        let randomRoomIndex = Math.floor(rooms.length * Math.random());
-        let randRoom = rooms[randomRoomIndex];
-        let level = {rooms: rooms, paths: paths};
-        this.props.makeNewLevel(level);
-
         // INITIATE WITH A RANDOM STARTING POINT
-        this.getInitialPosition(level);
+        // let randomRoomIndex = Math.ceil((rooms.length - 1) * Math.random());
+        // let randRoom = rooms[randomRoomIndex];
+        let leftRoom = this.sortFoundRooms(rooms, 'Y')[0];
+        console.log('this is the leftstroom', leftRoom)
+        let level = {rooms: rooms, paths: paths};
+        this.props.makeNewLevel(level);        
+        this.getInitialPosition(level, leftRoom);
+        this.addElementsAndWalls(leftRoom.index, level);
         return rooms;
+    }
+    addElementsAndWalls(randIndex, level){
+        console.log(randIndex, level);
+        for(var i = 0; i < level.rooms.length; i ++){
+            let room = level.rooms[i];
+            let neighbors = this.getNeighbors(room, level.paths, level.rooms);
+            for(var j = 0; j < neighbors.length; j++){
+
+            }
+        }
+    }
+    getInitialPosition(level, leftRoom){
+        let rooms = level.rooms;
+        let paths = level.paths;
+        let neighbors = this.getNeighbors(leftRoom, paths, rooms);
+        //INITIALIZE DRAWING
+        neighbors.map(function(n){
+            this.drawBox(n);
+        }.bind(this))
+        this.drawBox(leftRoom);
+
+        let X = leftRoom.X + leftRoom.boxWidth / 2;
+        let Y = leftRoom.Y + leftRoom.boxHeight / 2;
+        let rad = this.props.gameInfo.radius;
+        //SETS THE INNITIAL CONDITIONS FOR THE PLAYER HERE
+        this.props.changePlayerInfo({
+            location: leftRoom,
+            position : {
+                x: X, 
+                y: Y
+            },
+            elem: this.props.elements.neutral,
+            currentTexture: '#c2aa9e',
+            level: 0,
+            velocity: 2,
+            life: 200,
+            radius: this.props.gameInfo.radius,
+            neighbors: neighbors
+        });
     }
     buildPaths(rooms, width, height){
         let corridorsH = [];
@@ -95,6 +136,7 @@ class Game extends Component {
         const coredorWidth = this.props.gameInfo.coredorWidth;
         const divW = Math.floor(width / coredorWidth);
         const divH = Math.floor(height / coredorWidth);
+        //These two loops create the horizontal and the vertical corridors
         for(let i = 0; i <= divH; i ++){
             let rangeH = {}
             rangeH.Y1 = i * coredorWidth;
@@ -109,6 +151,7 @@ class Game extends Component {
             let findConnectionsV = this.findConnectedRooms(rangeV, rooms, 'X');
             corridorsV = corridorsV.concat(findConnectionsV);
         }
+        //Merges all the corridors that have the exact same connections into one corridor with random width
         corridorsH = this.mergeCorridors(corridorsH, 'Y');
         corridorsV = this.mergeCorridors(corridorsV, 'X');
         let allCorredors = corridorsH.concat(corridorsV);
@@ -201,15 +244,18 @@ class Game extends Component {
         let corridors = [];
         if(foundRooms.length > 1){
             for(let j = 1; j < foundRooms.length; j ++){
-                //Check later for mistakes!
                 let logic = false;
                 if(orient === 'X'){
-                    logic = ((foundRooms[j - 1].corners.DR.X > range.X2) && (foundRooms[j].corners.DR.X > range.X2) && (foundRooms[j - 1].corners.DL.X < range.X1) && (foundRooms[j].corners.DL.X < range.X1));
-                    // logic = true;
+                    logic = ((foundRooms[j - 1].corners.DR.X > range.X2) 
+                    && (foundRooms[j].corners.DR.X > range.X2) 
+                    && (foundRooms[j - 1].corners.DL.X < range.X1) 
+                    && (foundRooms[j].corners.DL.X < range.X1));
                 } else {
-                    logic = (foundRooms[j - 1].corners.UR.Y < range.Y1) && (foundRooms[j].corners.UR.Y < range.Y1) && (foundRooms[j-1].corners.DL.Y > range.Y2) && (foundRooms[j].corners.DL.Y > range.Y2);
+                    logic = (foundRooms[j - 1].corners.UR.Y < range.Y1) 
+                    && (foundRooms[j].corners.UR.Y < range.Y1) 
+                    && (foundRooms[j-1].corners.DL.Y > range.Y2) 
+                    && (foundRooms[j].corners.DL.Y > range.Y2);
                 }
-                // console.log(logic);
                 if(logic){
                     let newCorridor = {};
                     if(orient === 'X'){
@@ -353,37 +399,7 @@ class Game extends Component {
         }
         return false;
     }
-    getInitialPosition(level){
-        let rooms = level.rooms;
-        let paths = level.paths;
-        let randomRoomIndex = Math.ceil((rooms.length - 1) * Math.random());
-        let randRoom = rooms[randomRoomIndex];
-        console.log('random room', randRoom)
-        let neighbors = this.getNeighbors(randRoom, paths, rooms);
-        //INITIALIZE DRAWING
-        neighbors.map(function(n){
-            this.drawBox(n);
-        }.bind(this))
-        this.drawBox(randRoom);
 
-        let X = randRoom.X + randRoom.boxWidth / 2;
-        let Y = randRoom.Y + randRoom.boxHeight / 2;
-        let rad = this.props.gameInfo.radius;
-        this.props.changePlayerInfo({
-            location: randRoom,
-            position : {
-                x: X, 
-                y: Y
-            },
-            currentTexture: this.props.gameInfo.roomColor,
-            level: 0,
-            angle: 0,
-            velocity: 1.5,
-            deceleration: 0.2,
-            radius: this.props.gameInfo.radius,
-            neighbors: neighbors
-        });
-    }
     handleKeyDown(ev) {
         const ctx = this.getCanvas();
         const key = ev.key;
@@ -465,7 +481,8 @@ function mapStateToProps(state){
     return {
         gameInfo: state.gameInfo,
         player: state.player,
-        levels: state.levels
+        levels: state.levels,
+        elements: state.elements
     };
 };
 

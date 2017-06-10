@@ -6,8 +6,8 @@ export default function() {
         screenHeigh: 500,
         coredorWidth: 50,
         roomDensity: 2000,
-        roomColor: 'rgba(200, 151, 4, 1)',
-        corredorColor: '#d57767',
-        radius: 14
+        roomColor: '#576a85',
+        corredorColor: '#576a85',
+        radius: 12
     }
 }

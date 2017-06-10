@@ -21,7 +21,7 @@ function positionEdit(action, state){
         player.neighbors = neighbors;
         let vel = player.velocity;
         if(vel > 0){
-            vel = vel - 0.55 * player.deceleration;
+            vel = vel - 0.55 * player.elem.deceleration;
             if(vel < 0){
                 vel = 0;
             }
@@ -31,7 +31,7 @@ function positionEdit(action, state){
             }
         }
         if(key === 'start'){
-            vel = 1.5;
+            vel = 2;
         } 
 
         let newPos = changePosition(key, oldPos, vel);
