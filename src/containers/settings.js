@@ -10,7 +10,8 @@ class Settings extends Component {
         return (
             <div>
                 <div>
-                    Element: <h2>{elem}</h2>
+                    <h2>Element: {elem}</h2>
+                    <h2>Life: {this.props.player.life}</h2>
                 </div>
                 
             </div>

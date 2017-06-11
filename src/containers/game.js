@@ -20,6 +20,11 @@ class Game extends Component {
         this.mergeCorridors = this.mergeCorridors.bind(this);
         this.getInitialPosition = this.getInitialPosition.bind(this);
         this.getNeighbors = this.getNeighbors.bind(this);
+        this.addElementsAndWalls = this.addElementsAndWalls.bind(this);
+        this.createBeginning = this.createBeginning.bind(this);
+        this.drawShrines = this.drawShrines.bind(this);
+        this.drawWall = this.drawWall.bind(this);
+        this.makeSpecialTraps = this.makeSpecialTraps.bind(this);
     }
     renderPosition() {
         let ctx = this.getCanvas();
@@ -44,7 +49,7 @@ class Game extends Component {
         ctx.closePath();
         // console.log('this is the player', this.props.player)
     }
-    buildRooms(){
+    buildRooms(levelIndex){
         let ctx = this.getCanvas();
         if(!ctx) {
             return null;
@@ -65,40 +70,332 @@ class Game extends Component {
             if(rooms.length > 0){
                 let isOverlap = this.checkOverlap(newRoom, rooms, width, height);
                 if(isOverlap){
-                    newRoom.index = roomIndex;
-                    newRoom.type = 'room';
+                    newRoom = this.makeRoomAttributes(newRoom, roomIndex, 'room');
                     rooms.push(newRoom);
+                    //TEMPORARILY DRAW THE ROOMS
+                    this.drawBox(newRoom);
                     roomIndex ++;
                 }
             } else {
                 //if there is no room craeted then create one
-                newRoom.index = roomIndex;
-                newRoom.type = 'room';
+                newRoom = this.makeRoomAttributes(newRoom, roomIndex, 'room');
+                //TEMPORARILY DRAW THE ROOMS
+                this.drawBox(newRoom);
                 rooms.push(newRoom);
                 roomIndex ++;
             }
         }
         // Build the coridors that connect the boxes
         let paths = this.buildPaths(rooms, width, height);
-        // INITIATE WITH A RANDOM STARTING POINT
-        // let randomRoomIndex = Math.ceil((rooms.length - 1) * Math.random());
-        // let randRoom = rooms[randomRoomIndex];
+        // INITIATE WITH THE MOST LEFT ROOM AS STARTING POINT
         let leftRoom = this.sortFoundRooms(rooms, 'Y')[0];
-        console.log('this is the leftstroom', leftRoom)
-        let level = {rooms: rooms, paths: paths};
-        this.props.makeNewLevel(level);        
+        leftRoom = this.createBeginning(leftRoom, levelIndex);
+        // CREATE THE ROOMS THAT CONTAIN WALLS AND THE ONE THAT HAS THE POWERUP
+        
+        let level = {rooms: rooms, paths: paths, beginning: leftRoom, index: levelIndex};
+        level = this.addElementsAndWalls(leftRoom.index, level, levelIndex)
+        console.log('level with walls', level);
+        this.props.makeNewLevel(level); 
+        
+               
         this.getInitialPosition(level, leftRoom);
-        this.addElementsAndWalls(leftRoom.index, level);
+        // this.addElementsAndWalls(leftRoom.index, level, levelIndex);
+        this.drawShrines(leftRoom);
+        
+
         return rooms;
     }
-    addElementsAndWalls(randIndex, level){
-        console.log(randIndex, level);
-        for(var i = 0; i < level.rooms.length; i ++){
-            let room = level.rooms[i];
-            let neighbors = this.getNeighbors(room, level.paths, level.rooms);
-            for(var j = 0; j < neighbors.length; j++){
-
+    drawShrines(room){
+        let shrines = room.shrines;
+        if(shrines.length > 0){
+            for(var i = 0; i < shrines.length; i++){
+                this.drawBox(shrines[i], this.choseShrineColor(shrines[i]))
             }
+        }
+    }
+    makeRoomAttributes(room, index, roomType){
+        room.index = index;
+        room.type = roomType;
+        room.traps = [];
+        room.shrines = [];
+        if(roomType === 'room'){
+            room.walls = [];
+            room.elements = [];
+        }
+        return room;
+    }
+    //get back to this later
+    addElementsAndWalls(leftIndex, level, levelIndex){
+        // console.log(leftIndex, level);
+        let rooms = level.rooms;
+        let randomRooms = rooms.reduce((prevRoom, r) => {
+            //if the index is less than half the population
+            if(r.index !== leftIndex && r.index < rooms.length / 2){
+                return prevRoom.concat(r);
+            }
+            return prevRoom;
+        }, []);
+        console.log('these are the chosen rooms', randomRooms);
+        for(var i = 0; i < randomRooms.length; i ++){
+            let room = randomRooms[i];
+            let neighbors = this.getNeighbors(room, level.paths, rooms);
+            //For the first levelindex rooms do a walls that correspond to the elements order
+            let type = '';
+            if(i < levelIndex){
+                type = this.chooseWallType(i);
+            } else {
+                type = 'rockWall'
+            }
+            let trapsAndElements = this.makeSpecialTraps(room);
+            let traps = trapsAndElements[0];
+            let elem = trapsAndElements[1];
+            elem = this.chooseElem(type, elem, this.props.elements);
+
+            this.drawBox(elem, this.chooseElemColor(elem))
+            traps.map((t) => {this.drawBox(t, '#4f4c4a')});
+            for(var j = 0; j < neighbors.length; j++){
+                let wall = this.makeWalls(neighbors[j], room, this.props.gameInfo.radius)
+                wall.type = type;
+                room.walls.push(wall);
+                this.drawWall(wall);
+            }
+            // level.rooms[room.index] = room
+        }
+        return level;
+    }
+    chooseElemColor(elem){
+        let color = '';
+        switch(elem.type.name){
+            case 'neutral':
+            color = '#c2aa9e';
+            break;
+            case 'fire':
+            color = 'red';
+            break;
+            case 'ice':
+            color = 'blue';
+            break;
+            case 'steel':
+            color = 'grey';
+            break;
+            case 'diamond':
+            color = 'white';
+            break;
+            default: color = '#c2aa9e'
+        }
+        return color;
+    }
+    chooseElem(type, elem, allElements){
+        switch(type){
+            case 'rockWall':
+            elem.type = allElements.fire;
+            break;
+            case 'iceWall':
+            elem.type = allElements.ice;
+            break;
+            case 'steelWall':
+            elem.type = allElements.steel;
+            break;
+            case 'diamondWall':
+            elem.type = allElements.diamond;
+            break;
+            default:
+            elem.type = allElements.neutral
+        }
+        return elem
+    }
+    makeSpecialTraps(room){
+        let randNum = 0.62 - Math.random() * 0.22;
+        let reverseRandNum = 1 - randNum;
+        let rad = this.props.gameInfo.radius;
+        if(Math.random() > 0.5){
+            let trap1 = {
+                X: room.X + room.boxWidth * 0.20,
+                Y: room.Y + room.boxHeight * 0.20,
+                boxWidth: rad * 2 + rad * 3 * Math.random(),
+                boxHeight: room.boxHeight * 0.6
+            }
+
+            let trap2 = {
+                X: trap1.X + trap1.boxWidth,
+                Y: trap1.Y,
+                boxWidth: room.boxWidth * 0.6 - trap1.boxWidth,
+                boxHeight: randNum * trap1.boxHeight - rad,
+            }
+
+            let trap3 = {
+                X: trap2.X,
+                Y: trap2.Y + trap2.boxHeight + rad* 2,
+                boxWidth: trap2.boxWidth,
+                boxHeight: reverseRandNum * trap1.boxHeight - rad
+            }
+
+            let element = {
+                X: trap2.X,
+                Y: trap2.Y + trap2.boxHeight,
+                boxHeight: rad * 2,
+                boxWidth: rad * 2
+            }
+            return [[trap1, trap2, trap3], element];
+        } else {
+            let rand = rad * 2 + rad * 3 * Math.random();
+
+            let trap1 = {
+                X: room.X + room.boxWidth * 0.20,
+                Y: room.Y + room.boxHeight * 0.20,
+                boxWidth: room.boxWidth * 0.6 - (rand),
+                boxHeight: randNum * room.boxHeight * 0.6 - rad,
+            }
+
+            let trap2 = {
+                X: trap1.X,
+                Y: trap1.Y + trap1.boxHeight + rad * 2,
+                boxWidth: trap1.boxWidth,
+                boxHeight: reverseRandNum * room.boxHeight * 0.6 - rad
+            }
+
+            let trap3 = {
+                X: trap1.X + trap1.boxWidth,
+                Y: trap1.Y,
+                boxWidth: rand,
+                boxHeight: room.boxHeight * 0.6
+            }
+
+            let element = {
+                X: trap3.X - rad * 2,
+                Y: trap1.Y + trap1.boxHeight,
+                boxHeight: rad * 2,
+                boxWidth: rad * 2
+            }
+            return [[trap1, trap2, trap3], element];
+        }
+        
+        
+    }
+    drawWall(wall){
+        let color = 'yellow'
+        switch(wall.type){
+            case 'rockWall':
+            color = '#945838';
+            break;
+            case 'iceWall':
+            color = '#aad7df';
+            break;
+            case 'steelWall':
+            color = '#919191';
+            break;
+            case 'diamondWall':
+            color = '#dad9d8';
+            break;
+            default:
+            color = 'yellow';
+        }
+        this.drawBox(wall, color);
+    }
+    chooseWallType(index){
+        let type = '';
+        switch(index){
+            case 1:
+            type = 'iceWall';
+            break;
+            case 2:
+            type = 'steelWall';
+            break;
+            case 3:
+            type = 'diamondWall';
+            break;
+            default:
+            type = 'rockWall';
+        }
+        return type;
+    }
+    makeWalls(neighbor, room, radius){
+        let newWall = {};
+        let nC = neighbor.corners;
+        if(nC.DL.Y === room.corners.UL.Y){
+            newWall = {
+                X: nC.DL.X,
+                Y: nC.DL.Y,
+                boxWidth: neighbor.boxWidth,
+                boxHeight: radius * 2
+            }
+        } else if(nC.UL.Y === room.corners.DL.Y){
+            newWall = {
+                X: nC.UL.X,
+                Y: nC.UL.Y - radius * 2,
+                boxWidth: neighbor.boxWidth,
+                boxHeight: radius * 2
+            }
+        } else if(nC.UL.X === room.corners.UR.X){
+            newWall = {
+                X: nC.UL.X - radius * 2,
+                Y: nC.UL.Y,
+                boxWidth: radius * 2,
+                boxHeight: neighbor.boxHeight
+            }
+        } else if(nC.UR.X === room.corners.UL.X) {
+            newWall = {
+                X: nC.UR.X,
+                Y: nC.UR.Y,
+                boxHeight: neighbor.boxHeight,
+                boxWidth: radius * 2,
+            }
+        }
+        return newWall;
+    }
+    createBeginning(room, levelIndex){
+        let height = room.boxHeight;
+        let width = room.boxWidth;
+        let shrines = []
+        let shrine_height = 0.8 * height / levelIndex
+        for(var i = 1; i <= levelIndex; i ++){
+            let type = '';
+            switch(i){
+                case 1:
+                type = 'fire'
+                break;
+                case 2:
+                type = 'ice'
+                break;
+                case 3:
+                type = 'steel'
+                break;
+                case 4:
+                type = 'diamond'
+            }
+            let shrine = {
+                type: type,
+                X: room.X,
+                Y: room.Y + 0.1 * height + shrine_height * (i - 1),
+                boxWidth: this.props.gameInfo.radius * 2 - 3,
+                boxHeight: shrine_height
+            }
+            
+            shrines.push(shrine);
+        }
+        let fountain = {
+            type: 'lifeFountain',
+            X: room.X + width * 0.25,
+            Y: room.Y + height * 0.25,
+            boxWidth: width * 0.5,
+            boxHeight: height * 0.5
+        }
+        shrines.push(fountain);
+        room.shrines = shrines;
+        return room;
+    }
+    choseShrineColor(shrine){
+        switch(shrine.type){
+            case 'fire':
+            return 'red'
+            case 'ice':
+            return 'blue'
+            case 'steel':
+            return 'grey'
+            case 'diamond':
+            return 'white'
+            case 'lifeFountain':
+            return 'green'
         }
     }
     getInitialPosition(level, leftRoom){
@@ -124,7 +421,7 @@ class Game extends Component {
             elem: this.props.elements.neutral,
             currentTexture: '#c2aa9e',
             level: 0,
-            velocity: 2,
+            velocity: this.props.gameInfo.initialVel,
             life: 200,
             radius: this.props.gameInfo.radius,
             neighbors: neighbors
@@ -156,10 +453,11 @@ class Game extends Component {
         corridorsV = this.mergeCorridors(corridorsV, 'X');
         let allCorredors = corridorsH.concat(corridorsV);
         allCorredors = allCorredors.map(function(cor, i){
-            cor.index = i;
-            cor.type = 'corridor';
+            cor = this.makeRoomAttributes(cor, i, 'corridor')
+            //TEMPORARILY DRAW THE CORRIDORS 
+            this.drawBox(cor);
             return cor
-        });
+        }.bind(this));
         return allCorredors;
     }
     mergeCorridors(cor, orient){
@@ -174,7 +472,8 @@ class Game extends Component {
                 if(j === i || !newCor[j]){
                     continue;
                 }
-                if((newCor[i].connects.indexOf(newCor[j].connects[0]) !== -1) && (newCor[i].connects.indexOf(newCor[j].connects[1]) !== -1)){
+                if((newCor[i].connects.indexOf(newCor[j].connects[0]) !== -1) 
+                && (newCor[i].connects.indexOf(newCor[j].connects[1]) !== -1)){
                     if(orient === 'Y'){
                         //randomize the height of the newly created newCorredor for more realism
                         let rand = (Math.random() * newCor[j].boxHeight);
@@ -280,7 +579,7 @@ class Game extends Component {
         }
         return corridors;
     }
-    drawBox(box){
+    drawBox(box, color){
         const ctx = this.getCanvas();
         if(!ctx){
             return null;
@@ -289,6 +588,9 @@ class Game extends Component {
             ctx.fillStyle = this.props.gameInfo.roomColor;
         } else {
             ctx.fillStyle = this.props.gameInfo.corredorColor
+        }
+        if(color !== undefined){
+            ctx.fillStyle = color;
         }
         ctx.fillRect(box.X, box.Y, box.boxWidth, box.boxHeight);
     }
@@ -360,7 +662,7 @@ class Game extends Component {
         if(object === 'start'){
             return Math.floor(Math.random() * dim);
         }
-        let newRoomDim = Math.ceil((0.085 + Math.random() * 0.14) * dim)
+        let newRoomDim = Math.ceil((0.09 + Math.random() * 0.14) * dim)
         return newRoomDim;
     }
     getCanvas(){
@@ -399,7 +701,6 @@ class Game extends Component {
         }
         return false;
     }
-
     handleKeyDown(ev) {
         const ctx = this.getCanvas();
         const key = ev.key;
@@ -414,14 +715,16 @@ class Game extends Component {
             key: 'start', 
             currentPlace: currentPlace, 
             level: level,
-            pressed: false
+            pressed: false,
+            initialVel: this.props.gameInfo.initialVel
         }
         let action2 = {
             player: this.props.player,
             currentPlace: this.props.player.location, 
             level: this.props.levels[0],
             key: ev.key,
-            pressed: true
+            pressed: true,
+            initialVel: this.props.gameInfo.initialVel
         }  
              
         if(this.props.player.velocity > 0){
@@ -436,6 +739,9 @@ class Game extends Component {
                     if(n.type === 'room'){
                         ctx.clearRect(n.X, n.Y, n.boxWidth, n.boxHeight)
                         this.drawBox(n);
+                        if(n.shrines.length > 0){
+                            n.shrines.map((s) => {this.drawBox(s, this.choseShrineColor(s))});
+                        }
                     } else {
                         if(currentPlace.type !== 'corridor'){
                             ctx.clearRect(n.X, n.Y, n.boxWidth, n.boxHeight)
@@ -445,6 +751,9 @@ class Game extends Component {
                 });
 
                 this.drawBox(currentPlace);
+                currentPlace.shrines.map(function(s){
+                    {this.drawBox(s, this.choseShrineColor(s))}
+                }.bind(this))
                 // console.log('velocity hereeeee', this.props.player.velocity);
                 if(this.props.player.velocity === 0){
                     // clearInterval(inter);
@@ -465,7 +774,7 @@ class Game extends Component {
         // frame = requestAnimationFrame(animateBall);
     }
     componentDidMount(){
-        this.buildRooms();
+        this.buildRooms(4);
         document.addEventListener("keydown", this.handleKeyDown, false);
     }
     render() {
