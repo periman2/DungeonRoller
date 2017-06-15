@@ -371,26 +371,26 @@ class Game extends Component {
         switch(shrine.type){
             case 'fire':
             if(shrine.active){
-                return '../redShrineOnn.png'
+                return '../textures/redShrineOnn.png'
             }
-            return '../redShrineOff.png'
+            return '../textures/redShrineOff.png'
             case 'ice':
             if(shrine.active){
-                return '../blueShrineOn.png'
+                return '../textures/blueShrineOn.png'
             }
-            return '../blueShrineOff.png'
+            return '../textures/blueShrineOff.png'
             case 'steel':
             if(shrine.active){
-                return '../greyShrineOn.png'
+                return '../textures/greyShrineOn.png'
             }
-            return '../greyShrineOff.png'
+            return '../textures/greyShrineOff.png'
             case 'diamond':
             if(shrine.active){
-                return '../diamondShrineOn.png'
+                return '../textures/diamondShrineOn.png'
             }
-            return '../diamondShrineOff.png'
+            return '../textures/diamondShrineOff.png'
             case 'lifeFountain':
-            return '../lifeFountain.png'
+            return '../textures/lifeFountain.png'
         }
     }
     getInitialPosition(level){
