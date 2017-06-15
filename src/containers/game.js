@@ -390,7 +390,7 @@ class Game extends Component {
             }
             return '../textures/diamondShrineOff.png'
             case 'lifeFountain':
-            return '../textures/lifeFountain.png'
+            return './textures/lifeFountain.png'
         }
     }
     getInitialPosition(level){
