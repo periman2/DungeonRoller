@@ -22201,26 +22201,26 @@
 	            switch (shrine.type) {
 	                case 'fire':
 	                    if (shrine.active) {
-	                        return '../redShrineOnn.png';
+	                        return '../textures/redShrineOnn.png';
 	                    }
-	                    return '../redShrineOff.png';
+	                    return '../textures/redShrineOff.png';
 	                case 'ice':
 	                    if (shrine.active) {
-	                        return '../blueShrineOn.png';
+	                        return '../textures/blueShrineOn.png';
 	                    }
-	                    return '../blueShrineOff.png';
+	                    return '../textures/blueShrineOff.png';
 	                case 'steel':
 	                    if (shrine.active) {
-	                        return '../greyShrineOn.png';
+	                        return '../textures/greyShrineOn.png';
 	                    }
-	                    return '../greyShrineOff.png';
+	                    return '../textures/greyShrineOff.png';
 	                case 'diamond':
 	                    if (shrine.active) {
-	                        return '../diamondShrineOn.png';
+	                        return '../textures/diamondShrineOn.png';
 	                    }
-	                    return '../diamondShrineOff.png';
+	                    return '../textures/diamondShrineOff.png';
 	                case 'lifeFountain':
-	                    return '../lifeFountain.png';
+	                    return '../textures/lifeFountain.png';
 	            }
 	        }
 	    }, {
@@ -23019,11 +23019,11 @@
 	        screenHeight: 600,
 	        coredorWidth: 19,
 	        roomDensity: 2000,
-	        roomColor: '../floor2.png',
-	        corredorColor: '../floor2.png',
+	        roomColor: '../textures/floor2.png',
+	        corredorColor: '../textures/floor2.png',
 	        radius: 6,
 	        initialVel: 1.3,
-	        trapColor: '../blackHole.png'
+	        trapColor: '../textures/blackHole.png'
 	    };
 	};
 
@@ -23459,31 +23459,31 @@
 	            name: 'neutral',
 	            breaks: ['rockWall'],
 	            deceleration: 0.2,
-	            texture: '../neutralElement.png'
+	            texture: '../textures/neutralElement.png'
 	        },
 	        fire: {
 	            name: 'fire',
 	            breaks: ['iceWall', 'fireWall', 'rockWall'],
 	            deceleration: 0.2,
-	            texture: '../fireElement.png'
+	            texture: '../textures/fireElement.png'
 	        },
 	        ice: {
 	            name: 'ice',
 	            breaks: ['iceWall', 'fireWall', 'rockWall', 'steelWall'],
 	            deceleration: 0.16,
-	            texture: '../iceElement.png'
+	            texture: '../textures/iceElement.png'
 	        },
 	        steel: {
 	            name: 'steel',
 	            breaks: ['iceWall', 'fireWall', 'rockWall', 'steelWall', 'diamondWall'],
 	            deceleration: 0.4,
-	            texture: '../steelElement.png'
+	            texture: '../textures/steelElement.png'
 	        },
 	        diamond: {
 	            name: 'diamond',
 	            breaks: ['everything'],
 	            deceleration: 0.23,
-	            texture: '../diamondElement.png'
+	            texture: '../textures/diamondElement.png'
 	        }
 	    };
 	};
