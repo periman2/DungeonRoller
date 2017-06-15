@@ -371,30 +371,29 @@ class Game extends Component {
         switch(shrine.type){
             case 'fire':
             if(shrine.active){
-                return '../textures/redShrineOnn.png'
+                return 'https://dl.dropboxusercontent.com/content_link/Cvaq88OfdlvFtB9itTzTjwl1hBUoREHl636bCCpqJAbyTi3X78NYqf6WA6Mcx2qu/file'
             }
-            return '../textures/redShrineOff.png'
+            return 'https://dl.dropboxusercontent.com/content_link/PWUDZCXLCSR9r8Lhs3vlEmhlm9uSLVXtnXVapR34wGqXPiFDAX8hoOcGQkoXQGoD/file'
             case 'ice':
             if(shrine.active){
-                return '../textures/blueShrineOn.png'
+                return 'https://dl.dropboxusercontent.com/content_link/p29H4DCOXxtMh2pEaZbepKj1vNOtQIfmSGfeN7sx3pVUlg3tkZtlQ2r4hIEt2eo1/file'
             }
-            return '../textures/blueShrineOff.png'
+            return 'https://photos-6.dropbox.com/t/2/AADmDQmEDYhdeeCjPVcwVQ3Aq7y4hnDNtygIMzR10fKBhg/12/596040564/png/32x32/1/_/1/2/blueShrineOff.png/EKXCgecEGI8BIAIoAg/Lbp7aul9U1nPvyYNFuYXivN5Huhaj52pygYysu8340o?size=1600x1200&size_mode=3'
             case 'steel':
             if(shrine.active){
-                return '../textures/greyShrineOn.png'
+                return 'https://dl.dropboxusercontent.com/content_link/UeRwHLvXTzNvgaqrMPwm5iN2m7GIVP27l3gsB6HAobPhKMWuMi9yiTwihodTQ26L/file'
             }
-            return '../textures/greyShrineOff.png'
+            return 'https://dl.dropboxusercontent.com/content_link/2thxWIoS2ukGsnlje9mMdJ1z9oL6DZK1WMEyUnIq89ekYWgoyJsBb4sQsaswpDm6/file'
             case 'diamond':
             if(shrine.active){
-                return '../textures/diamondShrineOn.png'
+                return 'https://dl.dropboxusercontent.com/content_link/2jz4fo61h49t9TXOf28KTAMugwoCzKlZpULc02vGPJEObWcYHTtPaScnQjAHysZ5/file'
             }
-            return '../textures/diamondShrineOff.png'
+            return 'https://dl.dropboxusercontent.com/content_link/V7xJPhPc3fsUQujw48Wz1tQi411uhQBh5UF4h15LtBTP9Rkz2AIa00iS3dVzlsDw/file'
             case 'lifeFountain':
-            return './textures/lifeFountain.png'
+            return 'https://dl.dropboxusercontent.com/content_link/0ABMcbk5rgHo7ky7FSz7pYMas3okumsMLSAj9ebJteRHrkYIstiNmpmX7wEAqCAN/file'
         }
     }
     getInitialPosition(level){
-        // console.log('this is the level coming from upstaris', level);
         let rooms = level.rooms;
         let paths = level.paths;
         let leftRoom = level.beginning;
