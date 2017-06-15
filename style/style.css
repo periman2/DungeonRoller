@@ -1,6 +1,7 @@
 body {
     /*background: grey;*/
-    background-image: url('dungeon.png')
+    /*background-image: url('dungeon.png')*/
+    background-image: url('background.png');
 }
 
 canvas {
