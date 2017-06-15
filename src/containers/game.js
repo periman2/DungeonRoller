@@ -2,6 +2,8 @@ import React , { Component } from 'react';
 import { connect } from 'react-redux';
 import { changePlayerInfo } from '../actions/player_move_action';
 import { makeNewLevel } from '../actions/create_level_action';
+import { changeLevels } from '../actions/alter_level_action';
+import { MoveScreen } from '../actions/move_screen_action';
 import { bindActionCreators } from 'redux';
 
 
@@ -25,14 +27,16 @@ class Game extends Component {
         this.drawShrines = this.drawShrines.bind(this);
         this.drawWall = this.drawWall.bind(this);
         this.makeSpecialTraps = this.makeSpecialTraps.bind(this);
+        this.drawCurrentRoom = this.drawCurrentRoom.bind(this);
     }
     renderPosition() {
         let ctx = this.getCanvas();
         if(!ctx) {
             return null;
         }
-        // ctx.clearRect(0, 0, width, height);
 
+        // const screenWidth = this.props.gameInfo.screenWidth;
+        // const screenHeight = this.props.gameInfo.screenHeight;
         const width = this.props.gameInfo.canvasWidth;
         const height = this.props.gameInfo.canvasHeight;
         let CorWidth = this.props.gameInfo.coredorWidth;
@@ -41,12 +45,14 @@ class Game extends Component {
             y: this.props.player.position.y,
             r: this.props.gameInfo.radius
         }
-        let fill = this.props.player.currentTexture;
+        let fill = this.props.player.elem.texture;
+        
         ctx.beginPath();
         ctx.arc(dim.x, dim.y, dim.r, 0, 2 * Math.PI);
         ctx.fillStyle = fill;
         ctx.fill();
         ctx.closePath();
+        
         // console.log('this is the player', this.props.player)
     }
     buildRooms(levelIndex){
@@ -73,14 +79,14 @@ class Game extends Component {
                     newRoom = this.makeRoomAttributes(newRoom, roomIndex, 'room');
                     rooms.push(newRoom);
                     //TEMPORARILY DRAW THE ROOMS
-                    this.drawBox(newRoom);
+                    // this.drawBox(newRoom);
                     roomIndex ++;
                 }
             } else {
                 //if there is no room craeted then create one
                 newRoom = this.makeRoomAttributes(newRoom, roomIndex, 'room');
                 //TEMPORARILY DRAW THE ROOMS
-                this.drawBox(newRoom);
+                // this.drawBox(newRoom);
                 rooms.push(newRoom);
                 roomIndex ++;
             }
@@ -93,17 +99,11 @@ class Game extends Component {
         // CREATE THE ROOMS THAT CONTAIN WALLS AND THE ONE THAT HAS THE POWERUP
         
         let level = {rooms: rooms, paths: paths, beginning: leftRoom, index: levelIndex};
-        level = this.addElementsAndWalls(leftRoom.index, level, levelIndex)
-        console.log('level with walls', level);
-        this.props.makeNewLevel(level); 
-        
-               
-        this.getInitialPosition(level, leftRoom);
-        // this.addElementsAndWalls(leftRoom.index, level, levelIndex);
-        this.drawShrines(leftRoom);
-        
-
-        return rooms;
+        level = this.addElementsAndWalls(leftRoom.index, level, levelIndex);
+        // this.props.makeNewLevel(level);
+        // this.getInitialPosition(level);
+        // this.drawShrines(leftRoom);
+        return level;
     }
     drawShrines(room){
         let shrines = room.shrines;
@@ -135,7 +135,6 @@ class Game extends Component {
             }
             return prevRoom;
         }, []);
-        console.log('these are the chosen rooms', randomRooms);
         for(var i = 0; i < randomRooms.length; i ++){
             let room = randomRooms[i];
             let neighbors = this.getNeighbors(room, level.paths, rooms);
@@ -144,49 +143,29 @@ class Game extends Component {
             if(i < levelIndex){
                 type = this.chooseWallType(i);
             } else {
-                type = 'rockWall'
+                type = {name: 'rockWall', strength: 100};
             }
-            let trapsAndElements = this.makeSpecialTraps(room);
-            let traps = trapsAndElements[0];
-            let elem = trapsAndElements[1];
-            elem = this.chooseElem(type, elem, this.props.elements);
+            let trapsAndElement = this.makeSpecialTraps(room);
+            let traps = trapsAndElement[0];
+            let elemPos = trapsAndElement[1];
+            let elem = this.chooseElem(type, elemPos, this.props.elements);
+            room.elements.push(elem);
+            room.traps.push(traps);
 
-            this.drawBox(elem, this.chooseElemColor(elem))
-            traps.map((t) => {this.drawBox(t, '#4f4c4a')});
+            // this.drawBox(elem, elem.type.texture)
+            // traps.map((t) => {this.drawBox(t, this.props.gameInfo.trapColor)});
             for(var j = 0; j < neighbors.length; j++){
                 let wall = this.makeWalls(neighbors[j], room, this.props.gameInfo.radius)
+                wall = this.getAllCorners(wall);
                 wall.type = type;
                 room.walls.push(wall);
-                this.drawWall(wall);
+                // this.drawWall(wall);
             }
-            // level.rooms[room.index] = room
         }
         return level;
     }
-    chooseElemColor(elem){
-        let color = '';
-        switch(elem.type.name){
-            case 'neutral':
-            color = '#c2aa9e';
-            break;
-            case 'fire':
-            color = 'red';
-            break;
-            case 'ice':
-            color = 'blue';
-            break;
-            case 'steel':
-            color = 'grey';
-            break;
-            case 'diamond':
-            color = 'white';
-            break;
-            default: color = '#c2aa9e'
-        }
-        return color;
-    }
     chooseElem(type, elem, allElements){
-        switch(type){
+        switch(type.name){
             case 'rockWall':
             elem.type = allElements.fire;
             break;
@@ -215,6 +194,7 @@ class Game extends Component {
                 boxWidth: rad * 2 + rad * 3 * Math.random(),
                 boxHeight: room.boxHeight * 0.6
             }
+            trap1 = this.getAllCorners(trap1)
 
             let trap2 = {
                 X: trap1.X + trap1.boxWidth,
@@ -222,20 +202,21 @@ class Game extends Component {
                 boxWidth: room.boxWidth * 0.6 - trap1.boxWidth,
                 boxHeight: randNum * trap1.boxHeight - rad,
             }
-
+            trap2 = this.getAllCorners(trap2)
             let trap3 = {
                 X: trap2.X,
                 Y: trap2.Y + trap2.boxHeight + rad* 2,
                 boxWidth: trap2.boxWidth,
                 boxHeight: reverseRandNum * trap1.boxHeight - rad
             }
-
+            trap3 = this.getAllCorners(trap3)
             let element = {
                 X: trap2.X,
                 Y: trap2.Y + trap2.boxHeight,
                 boxHeight: rad * 2,
                 boxWidth: rad * 2
             }
+            element = this.getAllCorners(element);
             return [[trap1, trap2, trap3], element];
         } else {
             let rand = rad * 2 + rad * 3 * Math.random();
@@ -246,27 +227,28 @@ class Game extends Component {
                 boxWidth: room.boxWidth * 0.6 - (rand),
                 boxHeight: randNum * room.boxHeight * 0.6 - rad,
             }
-
+            trap1 = this.getAllCorners(trap1)
             let trap2 = {
                 X: trap1.X,
                 Y: trap1.Y + trap1.boxHeight + rad * 2,
                 boxWidth: trap1.boxWidth,
                 boxHeight: reverseRandNum * room.boxHeight * 0.6 - rad
             }
-
+            trap2 = this.getAllCorners(trap2)
             let trap3 = {
                 X: trap1.X + trap1.boxWidth,
                 Y: trap1.Y,
                 boxWidth: rand,
                 boxHeight: room.boxHeight * 0.6
             }
-
+            trap3 = this.getAllCorners(trap3)
             let element = {
                 X: trap3.X - rad * 2,
                 Y: trap1.Y + trap1.boxHeight,
                 boxHeight: rad * 2,
                 boxWidth: rad * 2
             }
+            element = this.getAllCorners(element);
             return [[trap1, trap2, trap3], element];
         }
         
@@ -274,7 +256,7 @@ class Game extends Component {
     }
     drawWall(wall){
         let color = 'yellow'
-        switch(wall.type){
+        switch(wall.type.name){
             case 'rockWall':
             color = '#945838';
             break;
@@ -293,19 +275,19 @@ class Game extends Component {
         this.drawBox(wall, color);
     }
     chooseWallType(index){
-        let type = '';
+        let type = {};
         switch(index){
             case 1:
-            type = 'iceWall';
+            type = {name: 'iceWall', strength: 200};
             break;
             case 2:
-            type = 'steelWall';
+            type = {name: 'steelWall', strength: 300};
             break;
             case 3:
-            type = 'diamondWall';
+            type = {name: 'diamondWall', strength: 500};
             break;
             default:
-            type = 'rockWall';
+            type = {name: 'rockWall', strength: 200};
         }
         return type;
     }
@@ -368,9 +350,10 @@ class Game extends Component {
                 X: room.X,
                 Y: room.Y + 0.1 * height + shrine_height * (i - 1),
                 boxWidth: this.props.gameInfo.radius * 2 - 3,
-                boxHeight: shrine_height
+                boxHeight: shrine_height,
+                active: false
             }
-            
+            shrine = this.getAllCorners(shrine);
             shrines.push(shrine);
         }
         let fountain = {
@@ -378,8 +361,10 @@ class Game extends Component {
             X: room.X + width * 0.25,
             Y: room.Y + height * 0.25,
             boxWidth: width * 0.5,
-            boxHeight: height * 0.5
+            boxHeight: height * 0.5,
+            active: false
         }
+        fountain = this.getAllCorners(fountain);
         shrines.push(fountain);
         room.shrines = shrines;
         return room;
@@ -387,27 +372,42 @@ class Game extends Component {
     choseShrineColor(shrine){
         switch(shrine.type){
             case 'fire':
-            return 'red'
+            if(shrine.active){
+                return '#f25131'
+            }
+            return '#781a08'
             case 'ice':
-            return 'blue'
+            if(shrine.active){
+                return '#4edef4'
+            }
+            return '#097a8b'
             case 'steel':
-            return 'grey'
+            if(shrine.active){
+                return '#a6b3b5'
+            }
+            return '#3c4748'
             case 'diamond':
-            return 'white'
+            if(shrine.active){
+                return '#f9f6d7'
+            }
+            return '#b4c0bf'
             case 'lifeFountain':
             return 'green'
         }
     }
-    getInitialPosition(level, leftRoom){
+    getInitialPosition(level){
+        // console.log('this is the level coming from upstaris', level);
         let rooms = level.rooms;
         let paths = level.paths;
+        let leftRoom = level.beginning;
+        
         let neighbors = this.getNeighbors(leftRoom, paths, rooms);
         //INITIALIZE DRAWING
+        
         neighbors.map(function(n){
             this.drawBox(n);
         }.bind(this))
         this.drawBox(leftRoom);
-
         let X = leftRoom.X + leftRoom.boxWidth / 2;
         let Y = leftRoom.Y + leftRoom.boxHeight / 2;
         let rad = this.props.gameInfo.radius;
@@ -418,9 +418,10 @@ class Game extends Component {
                 x: X, 
                 y: Y
             },
+            XP: 1,
+            inCollisiton: {type: {strength: 0, name: 'none'}},
             elem: this.props.elements.neutral,
-            currentTexture: '#c2aa9e',
-            level: 0,
+            level: level.index,
             velocity: this.props.gameInfo.initialVel,
             life: 200,
             radius: this.props.gameInfo.radius,
@@ -455,7 +456,7 @@ class Game extends Component {
         allCorredors = allCorredors.map(function(cor, i){
             cor = this.makeRoomAttributes(cor, i, 'corridor')
             //TEMPORARILY DRAW THE CORRIDORS 
-            this.drawBox(cor);
+            // this.drawBox(cor);
             return cor
         }.bind(this));
         return allCorredors;
@@ -662,7 +663,7 @@ class Game extends Component {
         if(object === 'start'){
             return Math.floor(Math.random() * dim);
         }
-        let newRoomDim = Math.ceil((0.09 + Math.random() * 0.14) * dim)
+        let newRoomDim = Math.ceil((0.09 + Math.random() * 0.1) * dim)
         return newRoomDim;
     }
     getCanvas(){
@@ -675,6 +676,7 @@ class Game extends Component {
     }
     getNeighbors(location, paths, rooms){
         let connected = [];
+        
         if(location.type === 'room'){
             connected = paths.filter(function(cor){return cor.connects.indexOf(location.index) !== -1});
         } else {
@@ -703,79 +705,169 @@ class Game extends Component {
     }
     handleKeyDown(ev) {
         const ctx = this.getCanvas();
+        ev.preventDefault();
+        // ctx.clearRect(0, 0, this.props.gameInfo.canvasWidth, this.props.gameInfo.canvasHeight);
+        
+        // let Screen = {
+        //     X: this.props.screenLocation.x,
+        //     Y: this.props.screenLocation.y,
+        //     boxWidth: this.props.gameInfo.screenWidth,
+        //     boxHeight: this.props.gameInfo.screenHeight
+        // }
+        // ctx.translate(this.props.player.position.x - Screen.X, this.props.player.position.y - Screen.Y);
+
+        // console.log('this is the screen', Screen.X, Screen.Y);
         const key = ev.key;
-        let level = this.props.levels[0];
+        let levels = this.props.levels;
+        let level = levels.filter((l) => {return l.index === (this.props.player.level)})[0];
+        
         let neighbors = this.props.player.neighbors;
         // draw the current location and all the neighboors
         let currentPlace = this.props.player.location;
         let player = JSON.parse(JSON.stringify(this.props.player));
-        this.drawBox(currentPlace);
+        
         let action = {
             player: player,
             key: 'start', 
             currentPlace: currentPlace, 
             level: level,
-            pressed: false,
-            initialVel: this.props.gameInfo.initialVel
+            initialVel: this.props.gameInfo.initialVel,
         }
         let action2 = {
             player: this.props.player,
-            currentPlace: this.props.player.location, 
-            level: this.props.levels[0],
+            currentPlace: currentPlace, 
+            level: level,
             key: ev.key,
-            pressed: true,
             initialVel: this.props.gameInfo.initialVel
-        }  
-             
-        if(this.props.player.velocity > 0){
-            // let inter = setInterval(() => {
+        }
+        if(this.props.player.velocity > 0 && this.props.player.life > 0){
             var requestAnimationFrame = window.requestAnimationFrame;
             var cancelAnimationFrame = window.cancelAnimationFrame;
             var animateBall = () =>  {
-                 
+                let levels = this.props.levels;
+                let level = levels.filter((l) => {return l.index === (this.props.player.level)})[0];
+                // console.log('these are all the levels', levels);
                 ctx.clearRect(0, 0, this.props.gameInfo.canvasWidth, this.props.gameInfo.canvasHeight);
                 let currentPlace = this.props.player.location;
-                this.props.player.neighbors.map((n) => {
-                    if(n.type === 'room'){
-                        ctx.clearRect(n.X, n.Y, n.boxWidth, n.boxHeight)
-                        this.drawBox(n);
-                        if(n.shrines.length > 0){
-                            n.shrines.map((s) => {this.drawBox(s, this.choseShrineColor(s))});
+                let newRooms = [];
+                //check if dead
+                if(this.props.player.life <= 0 && this.props.player.velocity === 0){
+                    this.getInitialPosition(level);
+                    this.drawCurrentRoom(level.beginning);
+                    this.renderPosition();
+                    return null;
+                }
+                //check if level is completed
+                if(currentPlace.type === 'room'){
+                    if(currentPlace.shrines.length > 0){
+                        let S = currentPlace.shrines;
+                        let finished = true;
+                        for(var k = 0; k < S.length; k++){
+                            if(!S[k].active && S[k].type !== 'lifeFountain'){
+                                finished = false;
+                                break;
+                            }
                         }
+                        if(finished){
+                            if(level.index === 4){
+                                //finished the games so restart
+                                let firstLevel = levels.filter((l) => {return l.index === 0})[0]
+                                this.getInitialPosition(firstLevel);
+                                this.drawCurrentRoom(firstLevel.beginning);
+                                this.renderPosition();
+                                cancelAnimationFrame(myFrame);
+                                ev.preventDefault();
+                                return;
+                            }
+                            let newLevel = levels.filter((l) => {return l.index === (level.index + 1)})[0]
+                            // console.log('new level is : ', newLevel);
+                            this.getInitialPosition(newLevel);
+                            this.drawCurrentRoom(newLevel.beginning);
+                            this.renderPosition();
+                            cancelAnimationFrame(myFrame);
+                            ev.preventDefault();
+                            return;
+                        }
+                        
+                    }
+                }
+                //show the neighboring corridors/rooms
+                this.props.player.neighbors.map((n) => {
+                    //draw neighboring rooms and corridors
+                    if(n.type === 'room'){
+                        newRooms = level.rooms.map((r) => {
+                            if(r.index === n.index){
+                                return n;
+                            }
+                            return r;
+                        })
+                        this.drawCurrentRoom(n);
                     } else {
                         if(currentPlace.type !== 'corridor'){
-                            ctx.clearRect(n.X, n.Y, n.boxWidth, n.boxHeight)
                             this.drawBox(n);
                         }
                     }
                 });
-
-                this.drawBox(currentPlace);
-                currentPlace.shrines.map(function(s){
-                    {this.drawBox(s, this.choseShrineColor(s))}
-                }.bind(this))
-                // console.log('velocity hereeeee', this.props.player.velocity);
+                // udpate the rooms to have the new currentplace 
+                if(currentPlace.type === 'room'){
+                    newRooms = level.rooms.map((r) => {
+                        if(r.index === currentPlace.index){
+                            // console.log('found ya ma roomie ! ', r, currentPlace);
+                            return currentPlace;
+                        }
+                        return r;
+                    });
+                }
+                
+                level.rooms = newRooms;
+                this.props.changeLevels(levels);
+                this.drawCurrentRoom(currentPlace);
                 if(this.props.player.velocity === 0){
-                    // clearInterval(inter);
-                    cancelAnimationFrame(myFrame);
                     this.props.changePlayerInfo(action);
                     return;
                 } else {
                     this.props.changePlayerInfo(action2); 
                 }
-            // }, 20);
+                if(this.props.player.velocity === this.props.player.initialVel){
+                    cancelAnimationFrame(myFrame);
+                }
                 var myFrame = requestAnimationFrame(animateBall);
             };
             animateBall();
         } else {
             this.props.changePlayerInfo(action);
         }
-
-        // frame = requestAnimationFrame(animateBall);
+    }
+    drawCurrentRoom(currentPlace){
+        this.drawBox(currentPlace);
+        
+        if(currentPlace.type === 'room'){
+            if(currentPlace.shrines.length > 0){
+                currentPlace.shrines.map((s) => {
+                    {this.drawBox(s, this.choseShrineColor(s))}
+                });
+            }
+            if(currentPlace.traps.length > 0){
+                currentPlace.traps.map((ts) => { ts.map((t) => {this.drawBox(t, this.props.gameInfo.trapColor)})});
+            }
+            if(currentPlace.walls.length > 0){
+                currentPlace.walls.map((wall) => {this.drawWall(wall)})
+            }
+            if(currentPlace.elements.length > 0){
+                currentPlace.elements.map((el) => {this.drawBox(el, el.type.texture)});
+            }
+        }
     }
     componentDidMount(){
-        this.buildRooms(4);
+        let levels = [];
+        for(var i = 0; i < 4; i++){
+            levels[i] = this.buildRooms(i + 1);
+            this.props.makeNewLevel(levels[i]);
+        }
+        this.getInitialPosition(levels[0]);
+        this.drawCurrentRoom(levels[0].beginning);
         document.addEventListener("keydown", this.handleKeyDown, false);
+        this.props.moveScreen({x: -levels[0].beginning.X, y: -levels[0].beginning.Y})
     }
     render() {
         this.renderPosition();
@@ -791,12 +883,20 @@ function mapStateToProps(state){
         gameInfo: state.gameInfo,
         player: state.player,
         levels: state.levels,
-        elements: state.elements
+        elements: state.elements,
+        screenLocation: state.screenLocation
     };
 };
 
 function mapDispatchToProps(dispatch) {
-    return bindActionCreators({changePlayerInfo: changePlayerInfo, makeNewLevel: makeNewLevel}, dispatch);
+    return bindActionCreators(
+        {
+            changePlayerInfo: changePlayerInfo, 
+            makeNewLevel: makeNewLevel, 
+            changeLevels: changeLevels,
+            moveScreen: MoveScreen
+        },
+         dispatch);
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Game);

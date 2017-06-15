@@ -1,15 +1,16 @@
 export default function() {
     return {
-        canvasWidth: 1800,
-        canvasHeight: 1400,
-        screenWidth: 500,
-        screenHeigh: 500,
-        coredorWidth: 50,
+        canvasWidth: 700,
+        canvasHeight: 600,
+        screenWidth: 600,
+        screenHeight: 600,
+        coredorWidth: 20,
         roomDensity: 2000,
         roomColor: '#576a85',
         corredorColor: '#576a85',
-        radius: 12,
-        initialVel: 1.3
+        radius: 7,
+        initialVel: 1.3,
+        trapColor: '#4f4c4a'
     }
 }
 

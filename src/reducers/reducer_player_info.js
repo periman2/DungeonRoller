@@ -12,17 +12,16 @@ export default function(state={}, action){
 //PHYSICS ENGINE HERE
 function positionEdit(action, state){
     let player = JSON.parse(JSON.stringify(state));
-    if(state.position){
+    if(state.position && action.payload.currentPlace){
         let level = JSON.parse(JSON.stringify(action.payload.level));
         let key = action.payload.key;
-        let currentPlace = JSON.parse(JSON.stringify(action.payload.currentPlace));
+        let currentPlace = action.payload.currentPlace;
         let oldPos = JSON.parse(JSON.stringify(player.position));
         let neighbors = getNeighbors(currentPlace, level.paths, level.rooms);
-        player.neighbors = neighbors;
         let vel = player.velocity;
         let initialVel = action.payload.initialVel;
         if(vel > 0){
-            vel = vel - 0.55 * player.elem.deceleration;
+            vel = vel - 0.65 * player.elem.deceleration;
             if(vel < 0){
                 vel = 0;
             }
@@ -40,17 +39,19 @@ function positionEdit(action, state){
         // console.log("newPos", newPos);
         player.velocity = newPos.vel;
         //playerbox is for the new position
-        let playerBox = makeCorners(newPos.pos, player.radius);
-        let collision = handleCollision(playerBox, newPos.pos, currentPlace, neighbors);
+        // let playerBox = makeCorners(newPos.pos, player.radius);
+        let collision = handleCollision(player, newPos.pos, currentPlace, neighbors);
         //STEP FOR HANDLING COLLISION
-        // console.log(!collision.collided);
         if(!collision.collided && key !== 'start'){
             player.position = newPos.pos;
         }
+        player.neighbors = neighbors;
+        player.location = collision.current;
         if(collision.isInsideNeighbor){
             player.location = collision.collideWithNeighbor[0];
             player.neighbors = getNeighbors(collision.collideWithNeighbor[0], level.paths, level.rooms);
         }
+        
     } else {
         player = action.payload;
     }
@@ -114,12 +115,129 @@ function makeCorners(pos, rad){
     return corners;
 }
 
-function handleCollision(playerBox, newPos, currentPlace, neighbors){
+function handleCollision(player, newPos, currentPlace, neighbors){
+    let playerBox = makeCorners(newPos, player.radius);
     let collision = {
         collided: true,
         collideWithNeighbor: null,
-        isInsideNeighbor: null
+        isInsideNeighbor: null,
+        collidedWithWall: false,
+        collisionWithTrap: false,
+        current: currentPlace
     };
+    //now I will have to return if I find any of the following true
+    // console.log(player);
+
+    //Collision with walls when in corridors
+    neighbors = neighbors.map((n) => {
+        if(n.type === 'room'){
+            if(n.walls.length > 0){
+                n.walls = n.walls.filter((w) => {
+                    // console.log('-------------------------this is a wall', w);
+                    if(checkOneCorner(playerBox.UL, w.corners)
+                    || checkOneCorner(playerBox.UR, w.corners)
+                    || checkOneCorner(playerBox.DR, w.corners)
+                    || checkOneCorner(playerBox.DL, w.corners)){
+                        // console.log('.>>>>>>>>>>>>>>>>>>>>>>>>> I"m in the wall!', w);
+                        if(w.type.strength > 0){
+                            if((player.elem.name !== 'steel' && player.elem.name !== 'diamond') && w.type.name === 'diamondWall'){
+                                player.life -= Math.random() / (player.XP + 1);
+                                player.inCollision = w;
+                                collision.collided = false;
+                                collision.collidedWithWall = true;
+                                return true;
+                            }
+                            w.type.strength = w.type.strength - (player.XP) * Math.random();
+                            player.life -= Math.random() / (player.XP + 1);
+                            player.inCollision = w;
+                            collision.collided = false;
+                            collision.collidedWithWall = true;
+                            return true;
+                        } else {
+                            player.XP += 0.008 + 0.008 * Math.random() / 2;
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+            }
+        }
+        return n;
+    })
+    // Collision with walls when in room
+    if(currentPlace.walls){
+        // I need to use map and then filter in here ! 
+        currentPlace.walls = currentPlace.walls.reduce((prevW, w) => {
+            if(checkOneCorner(playerBox.UL, w.corners)
+            || checkOneCorner(playerBox.UR, w.corners)
+            || checkOneCorner(playerBox.DR, w.corners)
+            || checkOneCorner(playerBox.DL, w.corners)){
+                
+                if(w.type.strength > 0){
+                    w.type.strength = w.type.strength - (player.XP) * Math.random();
+                    prevW.push(w);
+                    console.log('.>>>>>>>>>>>>>>>>>>>>>>>>> I"m in the wall!', w.type.strength);
+                    player.life -= Math.random() / (player.XP + 1);
+                    player.inCollision = w;
+                    collision.collided = false;
+                    collision.collidedWithWall = true;
+                    return prevW
+                } else {
+                    player.XP += 0.008 + 0.008 * Math.random() / 2;
+                    return prevW;
+                }
+            }
+            prevW.push(w);
+            return prevW;
+        }, []);
+        collision.current = currentPlace;
+    }
+
+    
+    if(currentPlace.type === 'room'){
+        //Collision with traps when in room
+        if(currentPlace.traps.length > 0){
+            currentPlace.traps[0].map((t) => {
+                if(!checkOne(newPos, t)){
+                    player.life = 0;
+                }
+            });
+        }
+        //collision with elements when in room
+        if(currentPlace.elements.length > 0){
+            currentPlace.elements.map((e) => {
+                if(!checkOne(newPos, e)){ 
+                    player.elem = e.type;
+                }
+            })
+        }  
+        //collision with shrines when in room
+        if(currentPlace.shrines.length > 0){
+            currentPlace.shrines = currentPlace.shrines.map((s) => {
+                if(!checkOne(newPos, s)){
+                    // console.log('this is the shrine ', s);
+                    switch(s.type){
+                        case 'lifeFountain':
+                        player.life = 200;
+                        break;
+                        default:
+                        if(!s.active && player.elem.name === s.type){
+                            s.active = true;
+                            return s;
+                        }
+                    }
+                }
+                return s;
+            })
+        }
+    }
+
+    if(!collision.collided){
+        collision.collided = true;
+        return collision;
+    }
+
+    //check if it is inside the given box
     if(playerBox.UL.X >= currentPlace.corners.UL.X 
     && playerBox.UR.X <= currentPlace.corners.UR.X 
     && playerBox.UL.Y >= currentPlace.corners.UL.Y 
@@ -129,8 +247,6 @@ function handleCollision(playerBox, newPos, currentPlace, neighbors){
     }
     let cP = currentPlace.corners;
     let inNeighbor = neighbors.filter(function(neighbor){
-        
-        
         return filterNeighboors(neighbor, playerBox, currentPlace, collision, cP);
     });
     
@@ -252,6 +368,7 @@ function checkOneCorner(corner, corners){
         && corner.Y > corners.UL.Y
         && corner.Y < corners.DL.Y
     ){
+        //true if it is inside otherwise false
         return true;
     }
     return false;
