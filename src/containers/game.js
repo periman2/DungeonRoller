@@ -49,7 +49,10 @@ class Game extends Component {
         
         ctx.beginPath();
         ctx.arc(dim.x, dim.y, dim.r, 0, 2 * Math.PI);
-        ctx.fillStyle = fill;
+        let img = new Image();
+        img.src = fill;
+        var pat=ctx.createPattern(img,"repeat");
+        ctx.fillStyle = pat;
         ctx.fill();
         ctx.closePath();
         
@@ -79,14 +82,12 @@ class Game extends Component {
                     newRoom = this.makeRoomAttributes(newRoom, roomIndex, 'room');
                     rooms.push(newRoom);
                     //TEMPORARILY DRAW THE ROOMS
-                    // this.drawBox(newRoom);
                     roomIndex ++;
                 }
             } else {
                 //if there is no room craeted then create one
                 newRoom = this.makeRoomAttributes(newRoom, roomIndex, 'room');
                 //TEMPORARILY DRAW THE ROOMS
-                // this.drawBox(newRoom);
                 rooms.push(newRoom);
                 roomIndex ++;
             }
@@ -151,9 +152,6 @@ class Game extends Component {
             let elem = this.chooseElem(type, elemPos, this.props.elements);
             room.elements.push(elem);
             room.traps.push(traps);
-
-            // this.drawBox(elem, elem.type.texture)
-            // traps.map((t) => {this.drawBox(t, this.props.gameInfo.trapColor)});
             for(var j = 0; j < neighbors.length; j++){
                 let wall = this.makeWalls(neighbors[j], room, this.props.gameInfo.radius)
                 wall = this.getAllCorners(wall);
@@ -373,26 +371,26 @@ class Game extends Component {
         switch(shrine.type){
             case 'fire':
             if(shrine.active){
-                return '#f25131'
+                return '../redShrineOnn.png'
             }
-            return '#781a08'
+            return '../redShrineOff.png'
             case 'ice':
             if(shrine.active){
-                return '#4edef4'
+                return '../blueShrineOn.png'
             }
-            return '#097a8b'
+            return '../blueShrineOff.png'
             case 'steel':
             if(shrine.active){
-                return '#a6b3b5'
+                return '../greyShrineOn.png'
             }
-            return '#3c4748'
+            return '../greyShrineOff.png'
             case 'diamond':
             if(shrine.active){
-                return '#f9f6d7'
+                return '../diamondShrineOn.png'
             }
-            return '#b4c0bf'
+            return '../diamondShrineOff.png'
             case 'lifeFountain':
-            return 'green'
+            return '../lifeFountain.png'
         }
     }
     getInitialPosition(level){
@@ -582,17 +580,23 @@ class Game extends Component {
     }
     drawBox(box, color){
         const ctx = this.getCanvas();
+        const img = new Image();
         if(!ctx){
             return null;
         }
         if(box.type === 'room'){
-            ctx.fillStyle = this.props.gameInfo.roomColor;
+            // ctx.fillStyle = this.props.gameInfo.roomColor;
+            img.src = this.props.gameInfo.roomColor;
         } else {
-            ctx.fillStyle = this.props.gameInfo.corredorColor
+            // ctx.fillStyle = this.props.gameInfo.corredorColor
+            img.src = this.props.gameInfo.roomColor;
         }
         if(color !== undefined){
             ctx.fillStyle = color;
+            img.src = color;
         }
+        var pat=ctx.createPattern(img,"repeat");
+        ctx.fillStyle = pat;
         ctx.fillRect(box.X, box.Y, box.boxWidth, box.boxHeight);
     }
     checkOverlap(newRoom, rooms, width, height){
