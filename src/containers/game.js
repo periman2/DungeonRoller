@@ -367,26 +367,26 @@ class Game extends Component {
         switch(shrine.type){
             case 'fire':
             if(shrine.active){
-                return 'https://photos-4.dropbox.com/t/2/AABetqmpc19RzXd1EmWxbj3xyyXjkrEyzYX5LKP2gIukZg/12/596040564/png/32x32/1/_/1/2/redShrineOnn.png/EKXCgecEGKcBIAIoAg/kiosGyKoQtHrn9pbj3W2yGyxSPTQiDRC4bxmxeNOaqc?size=1600x1200&size_mode=3'
+                return 'https://dl.dropboxusercontent.com/s/2u0oorvdl44mq1p/redShrineOnn.png?dl=1'
             }
-            return 'https://photos-6.dropbox.com/t/2/AACCOIfWdPeXAgVXm5Jkmz8bR1E7Ns5lYsnBzYO6bQeBTA/12/596040564/png/32x32/1/_/1/2/redShrineOff.png/EKXCgecEGKcBIAIoAg/gqe5BtbsrIGoS8WS3csFjqHO4io7Go_WQ9sdRjGmFU8?size=1600x1200&size_mode=3'
+            return 'https://dl.dropboxusercontent.com/s/ps2v86bhxk9lijn/redShrineOff.png?dl=1'
             case 'ice':
             if(shrine.active){
-                return 'https://photos-1.dropbox.com/t/2/AAAqIWb6Ad8o28a82Jq3WogZYJDaKX3VMBm-R1NGJ4PPjQ/12/596040564/png/32x32/1/_/1/2/blueShrineOn.png/EKXCgecEGKcBIAIoAg/tFQUSvWr5wh04uQuoQ67P-VMcVG-CLReXrgeEw2UpZQ?size=1600x1200&size_mode=3'
+                return 'https://dl.dropboxusercontent.com/s/rzibhdxovc977gf/blueShrineOn.png?dl=1'
             }
-            return 'https://photos-1.dropbox.com/t/2/AAA46sICq6B_Qd_nrz5doJ6HfdIvBIP9Gc6QUtePp3WKYQ/12/596040564/png/32x32/1/_/1/2/blueShrineOff.png/EKXCgecEGKcBIAIoAg/Lbp7aul9U1nPvyYNFuYXivN5Huhaj52pygYysu8340o?size=1600x1200&size_mode=3'
+            return 'https://dl.dropboxusercontent.com/s/y9ttagut04wb92q/blueShrineOff.png?dl=1'
             case 'steel':
             if(shrine.active){
-                return 'https://photos-1.dropbox.com/t/2/AABVlzi1r5EDfA9W0l7XgONZoLnfdn9U7Mu1dSQhBL4a0A/12/596040564/png/32x32/1/_/1/2/greyShrineOn.png/EKXCgecEGKcBIAIoAg/f8CH18-4f_nKVOpa8GOFcU2oCiEp1ADd1nUzs2jqQZI?size=1600x1200&size_mode=3'
+                return 'https://dl.dropboxusercontent.com/s/wreahfiywybzlsu/greyShrineOn.png?dl=1'
             }
-            return 'https://photos-3.dropbox.com/t/2/AADWJzHKAuuaWPJU3a0_tFfS8g_yOD9ymdug52Ym7RPsWw/12/596040564/png/32x32/1/_/1/2/greyShrineOff.png/EKXCgecEGKcBIAIoAg/1OKPCXOQBt_jaHXKyPbjIIEmCJDFPhiCFz0PFNIxYQI?size=1600x1200&size_mode=3'
+            return 'https://dl.dropboxusercontent.com/s/qo1rr7caba19lg4/greyShrineOff.png?dl=1'
             case 'diamond':
             if(shrine.active){
-                return 'https://photos-4.dropbox.com/t/2/AADOhk021R3IkmbCiB_odjegi9htAyY9UHChjKTegw-2tw/12/596040564/png/32x32/1/_/1/2/diamondShrineOn.png/EKXCgecEGKcBIAIoAg/iE1r6OkFQe6_M1svbRp1QGdCIfD_BFHgN0mU5oyRblw?size=1600x1200&size_mode=3'
+                return 'https://dl.dropboxusercontent.com/s/5g7heisca3qvlt8/diamondShrineOn.png?dl=1'
             }
-            return 'https://photos-1.dropbox.com/t/2/AADu_m2WpPYduVECqnEnW2ov7diWgms5MSVIzmfXfuXkVQ/12/596040564/png/32x32/1/_/1/2/diamondShrineOff.png/EKXCgecEGKcBIAIoAg/l_8nQAK7T4hf103-ig60v8MjvTaqTHsQXyLPl7IxRno?size=1600x1200&size_mode=3'
+            return 'https://dl.dropboxusercontent.com/s/j6k4udj548q68ua/diamondShrineOff.png?dl=1'
             case 'lifeFountain':
-            return 'https://photos-2.dropbox.com/t/2/AABd952kidDm9Z3Y5ZIHqcQZqjcq8Hwliug7m6aFt-MJ-w/12/596040564/png/32x32/1/_/1/2/lifeFountain.png/EKXCgecEGKcBIAIoAg/JdS8rY12LLTdXJDBIKAFDrRNMyqTLWqRocqfc9VrSkc?size=1600x1200&size_mode=3'
+            return 'https://dl.dropboxusercontent.com/s/euppghg87czvw8v/lifeFountain.png?dl=1'
         }
     }
     getInitialPosition(level){
