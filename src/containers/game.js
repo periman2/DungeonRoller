@@ -575,7 +575,7 @@ class Game extends Component {
     }
     drawBox(box, color){
         const ctx = this.getCanvas();
-        const img = new Image()
+        const img = new Image();
         if(!ctx){
             return null;
         }

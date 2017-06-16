@@ -21843,9 +21843,6 @@
 	            if (!ctx) {
 	                return null;
 	            }
-
-	            // const screenWidth = this.props.gameInfo.screenWidth;
-	            // const screenHeight = this.props.gameInfo.screenHeight;
 	            var width = this.props.gameInfo.canvasWidth;
 	            var height = this.props.gameInfo.canvasHeight;
 	            var CorWidth = this.props.gameInfo.coredorWidth;
@@ -21975,7 +21972,6 @@
 	                    wall = this.getAllCorners(wall);
 	                    wall.type = type;
 	                    room.walls.push(wall);
-	                    // this.drawWall(wall);
 	                }
 	            }
 	            return level;
@@ -22201,32 +22197,31 @@
 	            switch (shrine.type) {
 	                case 'fire':
 	                    if (shrine.active) {
-	                        return '../textures/redShrineOnn.png';
+	                        return 'https://photos-4.dropbox.com/t/2/AABetqmpc19RzXd1EmWxbj3xyyXjkrEyzYX5LKP2gIukZg/12/596040564/png/32x32/1/_/1/2/redShrineOnn.png/EKXCgecEGKcBIAIoAg/kiosGyKoQtHrn9pbj3W2yGyxSPTQiDRC4bxmxeNOaqc?size=1600x1200&size_mode=3';
 	                    }
-	                    return '../textures/redShrineOff.png';
+	                    return 'https://photos-6.dropbox.com/t/2/AACCOIfWdPeXAgVXm5Jkmz8bR1E7Ns5lYsnBzYO6bQeBTA/12/596040564/png/32x32/1/_/1/2/redShrineOff.png/EKXCgecEGKcBIAIoAg/gqe5BtbsrIGoS8WS3csFjqHO4io7Go_WQ9sdRjGmFU8?size=1600x1200&size_mode=3';
 	                case 'ice':
 	                    if (shrine.active) {
-	                        return '../textures/blueShrineOn.png';
+	                        return 'https://photos-1.dropbox.com/t/2/AAAqIWb6Ad8o28a82Jq3WogZYJDaKX3VMBm-R1NGJ4PPjQ/12/596040564/png/32x32/1/_/1/2/blueShrineOn.png/EKXCgecEGKcBIAIoAg/tFQUSvWr5wh04uQuoQ67P-VMcVG-CLReXrgeEw2UpZQ?size=1600x1200&size_mode=3';
 	                    }
-	                    return '../textures/blueShrineOff.png';
+	                    return 'https://photos-1.dropbox.com/t/2/AAA46sICq6B_Qd_nrz5doJ6HfdIvBIP9Gc6QUtePp3WKYQ/12/596040564/png/32x32/1/_/1/2/blueShrineOff.png/EKXCgecEGKcBIAIoAg/Lbp7aul9U1nPvyYNFuYXivN5Huhaj52pygYysu8340o?size=1600x1200&size_mode=3';
 	                case 'steel':
 	                    if (shrine.active) {
-	                        return '../textures/greyShrineOn.png';
+	                        return 'https://photos-1.dropbox.com/t/2/AABVlzi1r5EDfA9W0l7XgONZoLnfdn9U7Mu1dSQhBL4a0A/12/596040564/png/32x32/1/_/1/2/greyShrineOn.png/EKXCgecEGKcBIAIoAg/f8CH18-4f_nKVOpa8GOFcU2oCiEp1ADd1nUzs2jqQZI?size=1600x1200&size_mode=3';
 	                    }
-	                    return '../textures/greyShrineOff.png';
+	                    return 'https://photos-3.dropbox.com/t/2/AADWJzHKAuuaWPJU3a0_tFfS8g_yOD9ymdug52Ym7RPsWw/12/596040564/png/32x32/1/_/1/2/greyShrineOff.png/EKXCgecEGKcBIAIoAg/1OKPCXOQBt_jaHXKyPbjIIEmCJDFPhiCFz0PFNIxYQI?size=1600x1200&size_mode=3';
 	                case 'diamond':
 	                    if (shrine.active) {
-	                        return '../textures/diamondShrineOn.png';
+	                        return 'https://photos-4.dropbox.com/t/2/AADOhk021R3IkmbCiB_odjegi9htAyY9UHChjKTegw-2tw/12/596040564/png/32x32/1/_/1/2/diamondShrineOn.png/EKXCgecEGKcBIAIoAg/iE1r6OkFQe6_M1svbRp1QGdCIfD_BFHgN0mU5oyRblw?size=1600x1200&size_mode=3';
 	                    }
-	                    return '../textures/diamondShrineOff.png';
+	                    return 'https://photos-1.dropbox.com/t/2/AADu_m2WpPYduVECqnEnW2ov7diWgms5MSVIzmfXfuXkVQ/12/596040564/png/32x32/1/_/1/2/diamondShrineOff.png/EKXCgecEGKcBIAIoAg/l_8nQAK7T4hf103-ig60v8MjvTaqTHsQXyLPl7IxRno?size=1600x1200&size_mode=3';
 	                case 'lifeFountain':
-	                    return '../textures/lifeFountain.png';
+	                    return 'https://photos-2.dropbox.com/t/2/AABd952kidDm9Z3Y5ZIHqcQZqjcq8Hwliug7m6aFt-MJ-w/12/596040564/png/32x32/1/_/1/2/lifeFountain.png/EKXCgecEGKcBIAIoAg/JdS8rY12LLTdXJDBIKAFDrRNMyqTLWqRocqfc9VrSkc?size=1600x1200&size_mode=3';
 	            }
 	        }
 	    }, {
 	        key: 'getInitialPosition',
 	        value: function getInitialPosition(level) {
-	            // console.log('this is the level coming from upstaris', level);
 	            var rooms = level.rooms;
 	            var paths = level.paths;
 	            var leftRoom = level.beginning;
@@ -23019,11 +23014,11 @@
 	        screenHeight: 600,
 	        coredorWidth: 19,
 	        roomDensity: 2000,
-	        roomColor: '../textures/floor2.png',
-	        corredorColor: '../textures/floor2.png',
+	        roomColor: 'https://photos-5.dropbox.com/t/2/AAAi4Tm8THd0iSH3F0JuDRSoJAniZynJMzxj1tnzHj6bLA/12/596040564/png/32x32/1/_/1/2/floor2.png/EKXCgecEGJsBIAIoAg/Vv3M1IGbWw46V-GaOoXOyECmsd7zpAL5FDCRa1aR2_E?size=1600x1200&size_mode=3',
+	        corredorColor: 'https://photos-5.dropbox.com/t/2/AAAi4Tm8THd0iSH3F0JuDRSoJAniZynJMzxj1tnzHj6bLA/12/596040564/png/32x32/1/_/1/2/floor2.png/EKXCgecEGJsBIAIoAg/Vv3M1IGbWw46V-GaOoXOyECmsd7zpAL5FDCRa1aR2_E?size=1600x1200&size_mode=3',
 	        radius: 6,
 	        initialVel: 1.3,
-	        trapColor: '../textures/blackHole.png'
+	        trapColor: 'https://photos-1.dropbox.com/t/2/AADRe1gxQV5q4y6ozskZTb1pj8I0JYtT6zIFmkt5rl8Gmw/12/596040564/png/32x32/1/_/1/2/blackHole.png/EKXCgecEGKcBIAIoAg/IjEa4oQGBWNjcf5NHLD3K-os1Cfd0Drbdu7hrDXy67E?size=1600x1200&size_mode=3'
 	    };
 	};
 
@@ -23457,33 +23452,28 @@
 	    return {
 	        neutral: {
 	            name: 'neutral',
-	            breaks: ['rockWall'],
 	            deceleration: 0.2,
-	            texture: '../textures/neutralElement.png'
+	            texture: 'https://photos-1.dropbox.com/t/2/AADDCRVpBcw9ws_O4xgwvMojueB9f-EaFPz3jKzutshqRQ/12/596040564/png/32x32/1/_/1/2/neutralElement.png/EKXCgecEGKcBIAIoAg/lqh2X3LSa3ae_rIPSsqVHNNh8Jjc5joxdq704J2m58g?size=1600x1200&size_mode=3'
 	        },
 	        fire: {
 	            name: 'fire',
-	            breaks: ['iceWall', 'fireWall', 'rockWall'],
 	            deceleration: 0.2,
-	            texture: '../textures/fireElement.png'
+	            texture: 'https://photos-4.dropbox.com/t/2/AADY7LKvEe0ZLSEcp5opzQpcgQxut_t-h-lnzfhBU59X-A/12/596040564/png/32x32/1/_/1/2/fireElement.png/EKXCgecEGKcBIAIoAg/4jV4QDBmUi9DHlmd0UEgc3myc0pV5CbuaZQdhi_8mms?size=1600x1200&size_mode=3'
 	        },
 	        ice: {
 	            name: 'ice',
-	            breaks: ['iceWall', 'fireWall', 'rockWall', 'steelWall'],
 	            deceleration: 0.16,
-	            texture: '../textures/iceElement.png'
+	            texture: 'https://photos-6.dropbox.com/t/2/AAD4CjoEwmxIh6mbqY5Ss7vss6hzhtV5KWdJl5xpBb2gvA/12/596040564/png/32x32/1/_/1/2/iceElement.png/EKXCgecEGKcBIAIoAg/YFVaMyGlfQUkO-M1FaTWSMZoB6GnQFmfo4GkH5C4Mn4?size=1600x1200&size_mode=3'
 	        },
 	        steel: {
 	            name: 'steel',
-	            breaks: ['iceWall', 'fireWall', 'rockWall', 'steelWall', 'diamondWall'],
 	            deceleration: 0.4,
-	            texture: '../textures/steelElement.png'
+	            texture: 'https://photos-4.dropbox.com/t/2/AACiI0rvctFT47y93w-r3Z3v5GrIHrFeSyw0_yAjSvaSGw/12/596040564/png/32x32/1/_/1/2/steelElement.png/EKXCgecEGKcBIAIoAg/FPuynzLH7Wpr16XYAL5VHGBTkaKnGVHhmPlmW9Aiqkw?size=1600x1200&size_mode=3'
 	        },
 	        diamond: {
 	            name: 'diamond',
-	            breaks: ['everything'],
 	            deceleration: 0.23,
-	            texture: '../textures/diamondElement.png'
+	            texture: 'https://photos-4.dropbox.com/t/2/AAAVhoa4o4rEi9i9P0wZyalN2BFwHmX9S-FY-Uc0LyX4hw/12/596040564/png/32x32/1/_/1/2/diamondElement.png/EKXCgecEGKcBIAIoAg/dID_ptnpjijNmlIJT3AxAYujCTYLH-yL2gFwEZzdTwM?size=1600x1200&size_mode=3'
 	        }
 	    };
 	};
