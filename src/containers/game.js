@@ -34,9 +34,6 @@ class Game extends Component {
         if(!ctx) {
             return null;
         }
-
-        // const screenWidth = this.props.gameInfo.screenWidth;
-        // const screenHeight = this.props.gameInfo.screenHeight;
         const width = this.props.gameInfo.canvasWidth;
         const height = this.props.gameInfo.canvasHeight;
         let CorWidth = this.props.gameInfo.coredorWidth;
@@ -157,7 +154,6 @@ class Game extends Component {
                 wall = this.getAllCorners(wall);
                 wall.type = type;
                 room.walls.push(wall);
-                // this.drawWall(wall);
             }
         }
         return level;
@@ -371,26 +367,26 @@ class Game extends Component {
         switch(shrine.type){
             case 'fire':
             if(shrine.active){
-                return 'https://dl.dropboxusercontent.com/content_link/Cvaq88OfdlvFtB9itTzTjwl1hBUoREHl636bCCpqJAbyTi3X78NYqf6WA6Mcx2qu/file'
+                return 'https://photos-4.dropbox.com/t/2/AABetqmpc19RzXd1EmWxbj3xyyXjkrEyzYX5LKP2gIukZg/12/596040564/png/32x32/1/_/1/2/redShrineOnn.png/EKXCgecEGKcBIAIoAg/kiosGyKoQtHrn9pbj3W2yGyxSPTQiDRC4bxmxeNOaqc?size=1600x1200&size_mode=3'
             }
-            return 'https://dl.dropboxusercontent.com/content_link/PWUDZCXLCSR9r8Lhs3vlEmhlm9uSLVXtnXVapR34wGqXPiFDAX8hoOcGQkoXQGoD/file'
+            return 'https://photos-6.dropbox.com/t/2/AACCOIfWdPeXAgVXm5Jkmz8bR1E7Ns5lYsnBzYO6bQeBTA/12/596040564/png/32x32/1/_/1/2/redShrineOff.png/EKXCgecEGKcBIAIoAg/gqe5BtbsrIGoS8WS3csFjqHO4io7Go_WQ9sdRjGmFU8?size=1600x1200&size_mode=3'
             case 'ice':
             if(shrine.active){
-                return 'https://dl.dropboxusercontent.com/content_link/p29H4DCOXxtMh2pEaZbepKj1vNOtQIfmSGfeN7sx3pVUlg3tkZtlQ2r4hIEt2eo1/file'
+                return 'https://photos-1.dropbox.com/t/2/AAAqIWb6Ad8o28a82Jq3WogZYJDaKX3VMBm-R1NGJ4PPjQ/12/596040564/png/32x32/1/_/1/2/blueShrineOn.png/EKXCgecEGKcBIAIoAg/tFQUSvWr5wh04uQuoQ67P-VMcVG-CLReXrgeEw2UpZQ?size=1600x1200&size_mode=3'
             }
-            return 'https://photos-6.dropbox.com/t/2/AADmDQmEDYhdeeCjPVcwVQ3Aq7y4hnDNtygIMzR10fKBhg/12/596040564/png/32x32/1/_/1/2/blueShrineOff.png/EKXCgecEGI8BIAIoAg/Lbp7aul9U1nPvyYNFuYXivN5Huhaj52pygYysu8340o?size=1600x1200&size_mode=3'
+            return 'https://photos-1.dropbox.com/t/2/AAA46sICq6B_Qd_nrz5doJ6HfdIvBIP9Gc6QUtePp3WKYQ/12/596040564/png/32x32/1/_/1/2/blueShrineOff.png/EKXCgecEGKcBIAIoAg/Lbp7aul9U1nPvyYNFuYXivN5Huhaj52pygYysu8340o?size=1600x1200&size_mode=3'
             case 'steel':
             if(shrine.active){
-                return 'https://dl.dropboxusercontent.com/content_link/UeRwHLvXTzNvgaqrMPwm5iN2m7GIVP27l3gsB6HAobPhKMWuMi9yiTwihodTQ26L/file'
+                return 'https://photos-1.dropbox.com/t/2/AABVlzi1r5EDfA9W0l7XgONZoLnfdn9U7Mu1dSQhBL4a0A/12/596040564/png/32x32/1/_/1/2/greyShrineOn.png/EKXCgecEGKcBIAIoAg/f8CH18-4f_nKVOpa8GOFcU2oCiEp1ADd1nUzs2jqQZI?size=1600x1200&size_mode=3'
             }
-            return 'https://dl.dropboxusercontent.com/content_link/2thxWIoS2ukGsnlje9mMdJ1z9oL6DZK1WMEyUnIq89ekYWgoyJsBb4sQsaswpDm6/file'
+            return 'https://photos-3.dropbox.com/t/2/AADWJzHKAuuaWPJU3a0_tFfS8g_yOD9ymdug52Ym7RPsWw/12/596040564/png/32x32/1/_/1/2/greyShrineOff.png/EKXCgecEGKcBIAIoAg/1OKPCXOQBt_jaHXKyPbjIIEmCJDFPhiCFz0PFNIxYQI?size=1600x1200&size_mode=3'
             case 'diamond':
             if(shrine.active){
-                return 'https://dl.dropboxusercontent.com/content_link/2jz4fo61h49t9TXOf28KTAMugwoCzKlZpULc02vGPJEObWcYHTtPaScnQjAHysZ5/file'
+                return 'https://photos-4.dropbox.com/t/2/AADOhk021R3IkmbCiB_odjegi9htAyY9UHChjKTegw-2tw/12/596040564/png/32x32/1/_/1/2/diamondShrineOn.png/EKXCgecEGKcBIAIoAg/iE1r6OkFQe6_M1svbRp1QGdCIfD_BFHgN0mU5oyRblw?size=1600x1200&size_mode=3'
             }
-            return 'https://dl.dropboxusercontent.com/content_link/V7xJPhPc3fsUQujw48Wz1tQi411uhQBh5UF4h15LtBTP9Rkz2AIa00iS3dVzlsDw/file'
+            return 'https://photos-1.dropbox.com/t/2/AADu_m2WpPYduVECqnEnW2ov7diWgms5MSVIzmfXfuXkVQ/12/596040564/png/32x32/1/_/1/2/diamondShrineOff.png/EKXCgecEGKcBIAIoAg/l_8nQAK7T4hf103-ig60v8MjvTaqTHsQXyLPl7IxRno?size=1600x1200&size_mode=3'
             case 'lifeFountain':
-            return 'https://dl.dropboxusercontent.com/content_link/0ABMcbk5rgHo7ky7FSz7pYMas3okumsMLSAj9ebJteRHrkYIstiNmpmX7wEAqCAN/file'
+            return 'https://photos-2.dropbox.com/t/2/AABd952kidDm9Z3Y5ZIHqcQZqjcq8Hwliug7m6aFt-MJ-w/12/596040564/png/32x32/1/_/1/2/lifeFountain.png/EKXCgecEGKcBIAIoAg/JdS8rY12LLTdXJDBIKAFDrRNMyqTLWqRocqfc9VrSkc?size=1600x1200&size_mode=3'
         }
     }
     getInitialPosition(level){
