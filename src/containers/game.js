@@ -46,10 +46,10 @@ class Game extends Component {
         
         ctx.beginPath();
         ctx.arc(dim.x, dim.y, dim.r, 0, 2 * Math.PI);
-        let img = new Image();
-        img.src = fill;
-        var pat=ctx.createPattern(img,"repeat");
-        ctx.fillStyle = pat;
+        // let img = new Image();
+        // img.src = fill;
+        // var pat=ctx.createPattern(img,"repeat");
+        ctx.fillStyle = fill;
         ctx.fill();
         ctx.closePath();
         
@@ -367,26 +367,35 @@ class Game extends Component {
         switch(shrine.type){
             case 'fire':
             if(shrine.active){
-                return 'https://dl.dropboxusercontent.com/s/2u0oorvdl44mq1p/redShrineOnn.png?dl=1'
+                // return 'https://dl.dropboxusercontent.com/s/2u0oorvdl44mq1p/redShrineOnn.png?dl=1'
+                return '#df2920'
             }
-            return 'https://dl.dropboxusercontent.com/s/ps2v86bhxk9lijn/redShrineOff.png?dl=1'
+            // return 'https://dl.dropboxusercontent.com/s/ps2v86bhxk9lijn/redShrineOff.png?dl=1'
+            return '#9a6765'
             case 'ice':
             if(shrine.active){
-                return 'https://dl.dropboxusercontent.com/s/rzibhdxovc977gf/blueShrineOn.png?dl=1'
+                // return 'https://dl.dropboxusercontent.com/s/rzibhdxovc977gf/blueShrineOn.png?dl=1'
+                return '#5cceff'
             }
-            return 'https://dl.dropboxusercontent.com/s/y9ttagut04wb92q/blueShrineOff.png?dl=1'
+            // return 'https://dl.dropboxusercontent.com/s/y9ttagut04wb92q/blueShrineOff.png?dl=1'
+            return '#9eb4bd'
             case 'steel':
             if(shrine.active){
-                return 'https://dl.dropboxusercontent.com/s/wreahfiywybzlsu/greyShrineOn.png?dl=1'
+                // return 'https://www.dropbox.com/s/wreahfiywybzlsu/greyShrineOn.png?dl=1'
+                return '#a7acae'
             }
-            return 'https://dl.dropboxusercontent.com/s/qo1rr7caba19lg4/greyShrineOff.png?dl=1'
+            // return 'https://www.dropbox.com/s/qo1rr7caba19lg4/greyShrineOff.png?dl=1'
+            return '#474b4d'
             case 'diamond':
             if(shrine.active){
-                return 'https://dl.dropboxusercontent.com/s/5g7heisca3qvlt8/diamondShrineOn.png?dl=1'
+                // return 'https://www.dropbox.com/s/5g7heisca3qvlt8/diamondShrineOn.png?dl=1'
+                return '#f2f5e6'
             }
-            return 'https://dl.dropboxusercontent.com/s/j6k4udj548q68ua/diamondShrineOff.png?dl=1'
+            // return 'https://www.dropbox.com/s/j6k4udj548q68ua/diamondShrineOff.png?dl=1'
+            return '#c3c1a2'
             case 'lifeFountain':
-            return 'https://dl.dropboxusercontent.com/s/euppghg87czvw8v/lifeFountain.png?dl=1'
+            // return 'https://www.dropbox.com/s/euppghg87czvw8v/lifeFountain.png?dl=1'
+            return '#47ad43'
         }
     }
     getInitialPosition(level){
@@ -580,18 +589,18 @@ class Game extends Component {
             return null;
         }
         if(box.type === 'room'){
-            // ctx.fillStyle = this.props.gameInfo.roomColor;
-            img.src = this.props.gameInfo.roomColor;
+            ctx.fillStyle = this.props.gameInfo.roomColor;
+            // img.src = this.props.gameInfo.roomColor;
         } else {
-            // ctx.fillStyle = this.props.gameInfo.corredorColor
-            img.src = this.props.gameInfo.roomColor;
+            ctx.fillStyle = this.props.gameInfo.corredorColor
+            // img.src = this.props.gameInfo.roomColor;
         }
         if(color !== undefined){
             ctx.fillStyle = color;
-            img.src = color;
+            // img.src = color;
         }
-        var pat=ctx.createPattern(img,"repeat");
-        ctx.fillStyle = pat;
+        // var pat=ctx.createPattern(img,"repeat");
+        // ctx.fillStyle = pat;
         ctx.fillRect(box.X, box.Y, box.boxWidth, box.boxHeight);
     }
     checkOverlap(newRoom, rooms, width, height){
@@ -705,17 +714,6 @@ class Game extends Component {
     handleKeyDown(ev) {
         const ctx = this.getCanvas();
         ev.preventDefault();
-        // ctx.clearRect(0, 0, this.props.gameInfo.canvasWidth, this.props.gameInfo.canvasHeight);
-        
-        // let Screen = {
-        //     X: this.props.screenLocation.x,
-        //     Y: this.props.screenLocation.y,
-        //     boxWidth: this.props.gameInfo.screenWidth,
-        //     boxHeight: this.props.gameInfo.screenHeight
-        // }
-        // ctx.translate(this.props.player.position.x - Screen.X, this.props.player.position.y - Screen.Y);
-
-        // console.log('this is the screen', Screen.X, Screen.Y);
         const key = ev.key;
         let levels = this.props.levels;
         let level = levels.filter((l) => {return l.index === (this.props.player.level)})[0];
@@ -751,6 +749,7 @@ class Game extends Component {
                 let newRooms = [];
                 //check if dead
                 if(this.props.player.life <= 0 && this.props.player.velocity === 0){
+                    cancelAnimationFrame(myFrame);
                     this.getInitialPosition(level);
                     this.drawCurrentRoom(level.beginning);
                     this.renderPosition();
@@ -770,20 +769,20 @@ class Game extends Component {
                         if(finished){
                             if(level.index === 4){
                                 //finished the games so restart
+                                cancelAnimationFrame(myFrame);
                                 let firstLevel = levels.filter((l) => {return l.index === 0})[0]
                                 this.getInitialPosition(firstLevel);
                                 this.drawCurrentRoom(firstLevel.beginning);
                                 this.renderPosition();
-                                cancelAnimationFrame(myFrame);
                                 ev.preventDefault();
                                 return;
                             }
                             let newLevel = levels.filter((l) => {return l.index === (level.index + 1)})[0]
                             // console.log('new level is : ', newLevel);
+                            cancelAnimationFrame(myFrame);
                             this.getInitialPosition(newLevel);
                             this.drawCurrentRoom(newLevel.beginning);
                             this.renderPosition();
-                            cancelAnimationFrame(myFrame);
                             ev.preventDefault();
                             return;
                         }
