@@ -27,7 +27,6 @@ class Settings extends Component {
                     <h2>XP: {XP}</h2>
                     <h2>enemy: {enemy}</h2>
                 </div>
-                
             </div>
         )
     }

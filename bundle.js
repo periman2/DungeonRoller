@@ -21760,8 +21760,8 @@
 	      return _react2.default.createElement(
 	        'div',
 	        null,
-	        _react2.default.createElement(_game2.default, null),
-	        _react2.default.createElement(_settings2.default, null)
+	        _react2.default.createElement(_settings2.default, null),
+	        _react2.default.createElement(_game2.default, null)
 	      );
 	    }
 	  }]);
@@ -21833,6 +21833,8 @@
 	        _this.drawWall = _this.drawWall.bind(_this);
 	        _this.makeSpecialTraps = _this.makeSpecialTraps.bind(_this);
 	        _this.drawCurrentRoom = _this.drawCurrentRoom.bind(_this);
+	        _this.myFrame = null;
+	        _this.canclick = true;
 	        return _this;
 	    }
 
@@ -22236,6 +22238,7 @@
 	            var leftRoom = level.beginning;
 
 	            var neighbors = this.getNeighbors(leftRoom, paths, rooms);
+	            console.log("this is the beggining room ", leftRoom);
 	            //INITIALIZE DRAWING
 
 	            neighbors.map(function (n) {
@@ -22253,7 +22256,7 @@
 	                    y: Y
 	                },
 	                XP: 1,
-	                inCollisiton: { type: { strength: 0, name: 'none' } },
+	                inCollision: { type: { strength: 0, name: 'none' } },
 	                elem: this.props.elements.neutral,
 	                level: level.index,
 	                velocity: this.props.gameInfo.initialVel,
@@ -22574,44 +22577,40 @@
 	            var ctx = this.getCanvas();
 	            ev.preventDefault();
 	            var key = ev.key;
-	            var levels = this.props.levels;
-	            var level = levels.filter(function (l) {
-	                return l.index === _this2.props.player.level;
-	            })[0];
 
-	            var neighbors = this.props.player.neighbors;
-	            // draw the current location and all the neighboors
-	            var currentPlace = this.props.player.location;
-	            var player = JSON.parse(JSON.stringify(this.props.player));
-
-	            var action = {
-	                player: player,
-	                key: 'start',
-	                currentPlace: currentPlace,
-	                level: level,
-	                initialVel: this.props.gameInfo.initialVel
-	            };
-	            var action2 = {
-	                player: this.props.player,
-	                currentPlace: currentPlace,
-	                level: level,
-	                key: ev.key,
-	                initialVel: this.props.gameInfo.initialVel
-	            };
 	            if (this.props.player.velocity > 0) {
 	                var requestAnimationFrame = window.requestAnimationFrame;
 	                var cancelAnimationFrame = window.cancelAnimationFrame;
+	                // cancelAnimationFrame(this.myFrame);
 	                var animateBall = function animateBall() {
 	                    var levels = _this2.props.levels;
 	                    var level = levels.filter(function (l) {
 	                        return l.index === _this2.props.player.level;
 	                    })[0];
-	                    // console.log('these are all the levels', levels);
-	                    ctx.clearRect(0, 0, _this2.props.gameInfo.canvasWidth, _this2.props.gameInfo.canvasHeight);
+
+	                    var neighbors = _this2.props.player.neighbors;
+	                    // draw the current location and all the neighboors
 	                    var currentPlace = _this2.props.player.location;
+	                    var player = JSON.parse(JSON.stringify(_this2.props.player));
+
+	                    var action = {
+	                        player: player,
+	                        key: 'start',
+	                        currentPlace: currentPlace,
+	                        level: level,
+	                        initialVel: _this2.props.gameInfo.initialVel
+	                    };
+	                    var action2 = {
+	                        player: _this2.props.player,
+	                        currentPlace: currentPlace,
+	                        level: level,
+	                        key: ev.key,
+	                        initialVel: _this2.props.gameInfo.initialVel
+	                    };
+	                    ctx.clearRect(0, 0, _this2.props.gameInfo.canvasWidth, _this2.props.gameInfo.canvasHeight);
 	                    var newRooms = [];
 	                    //check if dead
-	                    if (_this2.props.player.life <= 0 && _this2.props.player.velocity === 0) {
+	                    if (_this2.props.player.life <= 0) {
 	                        cancelAnimationFrame(myFrame);
 	                        _this2.getInitialPosition(level);
 	                        _this2.drawCurrentRoom(level.beginning);
@@ -22655,7 +22654,7 @@
 	                            }
 	                        }
 	                    }
-	                    //show the neighboring corridors/rooms
+	                    // show the neighboring corridors/rooms
 	                    _this2.props.player.neighbors.map(function (n) {
 	                        //draw neighboring rooms and corridors
 	                        if (n.type === 'room') {
@@ -22676,7 +22675,6 @@
 	                    if (currentPlace.type === 'room') {
 	                        newRooms = level.rooms.map(function (r) {
 	                            if (r.index === currentPlace.index) {
-	                                // console.log('found ya ma roomie ! ', r, currentPlace);
 	                                return currentPlace;
 	                            }
 	                            return r;
@@ -22684,7 +22682,7 @@
 	                    }
 
 	                    level.rooms = newRooms;
-	                    _this2.props.changeLevels(levels);
+	                    // this.props.changeLevels(levels);
 	                    _this2.drawCurrentRoom(currentPlace);
 	                    if (_this2.props.player.velocity === 0) {
 	                        _this2.props.changePlayerInfo(action);
@@ -22699,6 +22697,20 @@
 	                };
 	                animateBall();
 	            } else {
+
+	                var levels = this.props.levels;
+	                var level = levels.filter(function (l) {
+	                    return l.index === _this2.props.player.level;
+	                })[0];
+	                var currentPlace = this.props.player.location;
+	                var player = JSON.parse(JSON.stringify(this.props.player));
+	                var action = {
+	                    player: player,
+	                    key: 'start',
+	                    currentPlace: currentPlace,
+	                    level: level,
+	                    initialVel: this.props.gameInfo.initialVel
+	                };
 	                this.props.changePlayerInfo(action);
 	            }
 	        }
@@ -22735,6 +22747,58 @@
 	                    });
 	                }
 	            }
+	        }
+	    }, {
+	        key: 'componentDidMount',
+	        value: function componentDidMount() {
+	            var levels = [];
+	            for (var i = 0; i < 4; i++) {
+	                levels[i] = this.buildRooms(i + 1);
+	                this.props.makeNewLevel(levels[i]);
+	            }
+	            this.getInitialPosition(levels[0]);
+	            this.drawCurrentRoom(levels[0].beginning);
+	            document.addEventListener("keydown", this.handleKeyDown, false);
+	            this.props.moveScreen({ x: -levels[0].beginning.X, y: -levels[0].beginning.Y });
+	        }
+	    }, {
+	        key: 'drawCurrentRoom',
+	        value: function drawCurrentRoom(currentPlace) {
+	            var _this4 = this;
+
+	            this.drawBox(currentPlace);
+
+	            if (currentPlace.type === 'room') {
+	                if (currentPlace.shrines.length > 0) {
+	                    currentPlace.shrines.map(function (s) {
+	                        {
+	                            _this4.drawBox(s, _this4.choseShrineColor(s));
+	                        }
+	                    });
+	                }
+	                if (currentPlace.traps.length > 0) {
+	                    currentPlace.traps.map(function (ts) {
+	                        ts.map(function (t) {
+	                            _this4.drawBox(t, _this4.props.gameInfo.trapColor);
+	                        });
+	                    });
+	                }
+	                if (currentPlace.walls.length > 0) {
+	                    currentPlace.walls.map(function (wall) {
+	                        _this4.drawWall(wall);
+	                    });
+	                }
+	                if (currentPlace.elements.length > 0) {
+	                    currentPlace.elements.map(function (el) {
+	                        _this4.drawBox(el, el.type.texture);
+	                    });
+	                }
+	            }
+	        }
+	    }, {
+	        key: 'componentDidUpdate',
+	        value: function componentDidUpdate() {
+	            cancelAnimationFrame(this.myFrame);
 	        }
 	    }, {
 	        key: 'componentDidMount',
@@ -22897,11 +22961,19 @@
 	        value: function render() {
 	            var elem = null;
 	            var enemy = null;
+	            var life = 0;
+	            var XP = 1;
+	            if (this.props.player.life > 0) {
+	                life = Math.floor(this.props.player.life);
+	            }
+	            if (this.props.player.XP > 1) {
+	                XP = Math.floor(this.props.player.XP);
+	            }
 	            if (this.props.player.elem) {
 	                elem = this.props.player.elem.name;
 	            }
-	            if (this.props.player.inCollision) {
-	                enemy = this.props.player.inCollision.type.strength;
+	            if (this.props.player.inCollision && this.props.player.inCollision.type.strength >= 0) {
+	                enemy = Math.floor(this.props.player.inCollision.type.strength);
 	            }
 	            return _react2.default.createElement(
 	                'div',
@@ -22919,13 +22991,13 @@
 	                        'h2',
 	                        null,
 	                        'Life: ',
-	                        this.props.player.life
+	                        life
 	                    ),
 	                    _react2.default.createElement(
 	                        'h2',
 	                        null,
 	                        'XP: ',
-	                        this.props.player.XP
+	                        XP
 	                    ),
 	                    _react2.default.createElement(
 	                        'h2',
@@ -23015,8 +23087,8 @@
 	        roomDensity: 2000,
 	        // roomColor: 'https://dl.dropboxusercontent.com/s/jm3h1hvw32l7ur5/floor2.png?dl=1',
 	        // corredorColor: 'https://dl.dropboxusercontent.com/s/jm3h1hvw32l7ur5/floor2.png?dl=1',
-	        roomColor: '#937a5c',
-	        corredorColor: '#937a5c',
+	        roomColor: '#9b7a59',
+	        corredorColor: '#9b7a59',
 	        radius: 6,
 	        initialVel: 1.3,
 	        // trapColor: 'https://dl.dropboxusercontent.com/s/opbei51tsw3toe3/blackHole.png?dl=1'
@@ -23052,10 +23124,13 @@
 	function positionEdit(action, state) {
 	    var player = JSON.parse(JSON.stringify(state));
 	    if (state.position && action.payload.currentPlace) {
-
+	        // console.log(player);
 	        var level = JSON.parse(JSON.stringify(action.payload.level));
 	        if (player.life <= 0) {
+	            console.log('died', player);
 	            player.location = level.beginning;
+	            player.position.x = level.beginning.X + level.beginning.boxWidth / 2;
+	            player.position.y = level.beginning.Y + level.beginning.boxHeight / 2;
 	            player.life = 200;
 	            player.neighbors = getNeighbors(level.beginning, level.paths, level.rooms);
 	            return player;
@@ -23217,7 +23292,7 @@
 	                if (w.type.strength > 0) {
 	                    w.type.strength = w.type.strength - player.XP * Math.random();
 	                    prevW.push(w);
-	                    console.log('.>>>>>>>>>>>>>>>>>>>>>>>>> I"m in the wall!', w.type.strength);
+	                    // console.log('.>>>>>>>>>>>>>>>>>>>>>>>>> I"m in the wall!', w.type.strength);
 	                    player.life -= Math.random() / (player.XP + 1);
 	                    player.inCollision = w;
 	                    collision.collided = false;
