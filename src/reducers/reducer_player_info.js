@@ -13,7 +13,17 @@ export default function(state={}, action){
 function positionEdit(action, state){
     let player = JSON.parse(JSON.stringify(state));
     if(state.position && action.payload.currentPlace){
+        // console.log(player);
         let level = JSON.parse(JSON.stringify(action.payload.level));
+        if(player.life <= 0){
+            console.log('died', player);
+            player.location = level.beginning;
+            player.position.x = level.beginning.X + level.beginning.boxWidth / 2
+            player.position.y = level.beginning.Y + level.beginning.boxHeight / 2
+            player.life = 200;
+            player.neighbors = getNeighbors(level.beginning, level.paths, level.rooms);
+            return player
+        }
         let key = action.payload.key;
         let currentPlace = action.payload.currentPlace;
         let oldPos = JSON.parse(JSON.stringify(player.position));
@@ -176,7 +186,7 @@ function handleCollision(player, newPos, currentPlace, neighbors){
                 if(w.type.strength > 0){
                     w.type.strength = w.type.strength - (player.XP) * Math.random();
                     prevW.push(w);
-                    console.log('.>>>>>>>>>>>>>>>>>>>>>>>>> I"m in the wall!', w.type.strength);
+                    // console.log('.>>>>>>>>>>>>>>>>>>>>>>>>> I"m in the wall!', w.type.strength);
                     player.life -= Math.random() / (player.XP + 1);
                     player.inCollision = w;
                     collision.collided = false;

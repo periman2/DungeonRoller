@@ -21855,10 +21855,10 @@
 
 	            ctx.beginPath();
 	            ctx.arc(dim.x, dim.y, dim.r, 0, 2 * Math.PI);
-	            var img = new Image();
-	            img.src = fill;
-	            var pat = ctx.createPattern(img, "repeat");
-	            ctx.fillStyle = pat;
+	            // let img = new Image();
+	            // img.src = fill;
+	            // var pat=ctx.createPattern(img,"repeat");
+	            ctx.fillStyle = fill;
 	            ctx.fill();
 	            ctx.closePath();
 
@@ -22197,26 +22197,35 @@
 	            switch (shrine.type) {
 	                case 'fire':
 	                    if (shrine.active) {
-	                        return 'https://dl.dropboxusercontent.com/s/2u0oorvdl44mq1p/redShrineOnn.png?dl=1';
+	                        // return 'https://dl.dropboxusercontent.com/s/2u0oorvdl44mq1p/redShrineOnn.png?dl=1'
+	                        return '#df2920';
 	                    }
-	                    return 'https://dl.dropboxusercontent.com/s/ps2v86bhxk9lijn/redShrineOff.png?dl=1';
+	                    // return 'https://dl.dropboxusercontent.com/s/ps2v86bhxk9lijn/redShrineOff.png?dl=1'
+	                    return '#9a6765';
 	                case 'ice':
 	                    if (shrine.active) {
-	                        return 'https://dl.dropboxusercontent.com/s/rzibhdxovc977gf/blueShrineOn.png?dl=1';
+	                        // return 'https://dl.dropboxusercontent.com/s/rzibhdxovc977gf/blueShrineOn.png?dl=1'
+	                        return '#5cceff';
 	                    }
-	                    return 'https://dl.dropboxusercontent.com/s/y9ttagut04wb92q/blueShrineOff.png?dl=1';
+	                    // return 'https://dl.dropboxusercontent.com/s/y9ttagut04wb92q/blueShrineOff.png?dl=1'
+	                    return '#9eb4bd';
 	                case 'steel':
 	                    if (shrine.active) {
-	                        return 'https://dl.dropboxusercontent.com/s/wreahfiywybzlsu/greyShrineOn.png?dl=1';
+	                        // return 'https://www.dropbox.com/s/wreahfiywybzlsu/greyShrineOn.png?dl=1'
+	                        return '#a7acae';
 	                    }
-	                    return 'https://dl.dropboxusercontent.com/s/qo1rr7caba19lg4/greyShrineOff.png?dl=1';
+	                    // return 'https://www.dropbox.com/s/qo1rr7caba19lg4/greyShrineOff.png?dl=1'
+	                    return '#474b4d';
 	                case 'diamond':
 	                    if (shrine.active) {
-	                        return 'https://dl.dropboxusercontent.com/s/5g7heisca3qvlt8/diamondShrineOn.png?dl=1';
+	                        // return 'https://www.dropbox.com/s/5g7heisca3qvlt8/diamondShrineOn.png?dl=1'
+	                        return '#f2f5e6';
 	                    }
-	                    return 'https://dl.dropboxusercontent.com/s/j6k4udj548q68ua/diamondShrineOff.png?dl=1';
+	                    // return 'https://www.dropbox.com/s/j6k4udj548q68ua/diamondShrineOff.png?dl=1'
+	                    return '#c3c1a2';
 	                case 'lifeFountain':
-	                    return 'https://dl.dropboxusercontent.com/s/euppghg87czvw8v/lifeFountain.png?dl=1';
+	                    // return 'https://www.dropbox.com/s/euppghg87czvw8v/lifeFountain.png?dl=1'
+	                    return '#47ad43';
 	            }
 	        }
 	    }, {
@@ -22418,18 +22427,18 @@
 	                return null;
 	            }
 	            if (box.type === 'room') {
-	                // ctx.fillStyle = this.props.gameInfo.roomColor;
-	                img.src = this.props.gameInfo.roomColor;
+	                ctx.fillStyle = this.props.gameInfo.roomColor;
+	                // img.src = this.props.gameInfo.roomColor;
 	            } else {
-	                // ctx.fillStyle = this.props.gameInfo.corredorColor
-	                img.src = this.props.gameInfo.roomColor;
+	                ctx.fillStyle = this.props.gameInfo.corredorColor;
+	                // img.src = this.props.gameInfo.roomColor;
 	            }
 	            if (color !== undefined) {
 	                ctx.fillStyle = color;
-	                img.src = color;
+	                // img.src = color;
 	            }
-	            var pat = ctx.createPattern(img, "repeat");
-	            ctx.fillStyle = pat;
+	            // var pat=ctx.createPattern(img,"repeat");
+	            // ctx.fillStyle = pat;
 	            ctx.fillRect(box.X, box.Y, box.boxWidth, box.boxHeight);
 	        }
 	    }, {
@@ -22564,17 +22573,6 @@
 
 	            var ctx = this.getCanvas();
 	            ev.preventDefault();
-	            // ctx.clearRect(0, 0, this.props.gameInfo.canvasWidth, this.props.gameInfo.canvasHeight);
-
-	            // let Screen = {
-	            //     X: this.props.screenLocation.x,
-	            //     Y: this.props.screenLocation.y,
-	            //     boxWidth: this.props.gameInfo.screenWidth,
-	            //     boxHeight: this.props.gameInfo.screenHeight
-	            // }
-	            // ctx.translate(this.props.player.position.x - Screen.X, this.props.player.position.y - Screen.Y);
-
-	            // console.log('this is the screen', Screen.X, Screen.Y);
 	            var key = ev.key;
 	            var levels = this.props.levels;
 	            var level = levels.filter(function (l) {
@@ -22600,7 +22598,7 @@
 	                key: ev.key,
 	                initialVel: this.props.gameInfo.initialVel
 	            };
-	            if (this.props.player.velocity > 0 && this.props.player.life > 0) {
+	            if (this.props.player.velocity > 0) {
 	                var requestAnimationFrame = window.requestAnimationFrame;
 	                var cancelAnimationFrame = window.cancelAnimationFrame;
 	                var animateBall = function animateBall() {
@@ -22614,6 +22612,7 @@
 	                    var newRooms = [];
 	                    //check if dead
 	                    if (_this2.props.player.life <= 0 && _this2.props.player.velocity === 0) {
+	                        cancelAnimationFrame(myFrame);
 	                        _this2.getInitialPosition(level);
 	                        _this2.drawCurrentRoom(level.beginning);
 	                        _this2.renderPosition();
@@ -22633,13 +22632,13 @@
 	                            if (finished) {
 	                                if (level.index === 4) {
 	                                    //finished the games so restart
+	                                    cancelAnimationFrame(myFrame);
 	                                    var firstLevel = levels.filter(function (l) {
 	                                        return l.index === 0;
 	                                    })[0];
 	                                    _this2.getInitialPosition(firstLevel);
 	                                    _this2.drawCurrentRoom(firstLevel.beginning);
 	                                    _this2.renderPosition();
-	                                    cancelAnimationFrame(myFrame);
 	                                    ev.preventDefault();
 	                                    return;
 	                                }
@@ -22647,10 +22646,10 @@
 	                                    return l.index === level.index + 1;
 	                                })[0];
 	                                // console.log('new level is : ', newLevel);
+	                                cancelAnimationFrame(myFrame);
 	                                _this2.getInitialPosition(newLevel);
 	                                _this2.drawCurrentRoom(newLevel.beginning);
 	                                _this2.renderPosition();
-	                                cancelAnimationFrame(myFrame);
 	                                ev.preventDefault();
 	                                return;
 	                            }
@@ -23014,11 +23013,14 @@
 	        screenHeight: 600,
 	        coredorWidth: 19,
 	        roomDensity: 2000,
-	        roomColor: 'https://dl.dropboxusercontent.com/s/jm3h1hvw32l7ur5/floor2.png?dl=1',
-	        corredorColor: 'https://dl.dropboxusercontent.com/s/jm3h1hvw32l7ur5/floor2.png?dl=1',
+	        // roomColor: 'https://dl.dropboxusercontent.com/s/jm3h1hvw32l7ur5/floor2.png?dl=1',
+	        // corredorColor: 'https://dl.dropboxusercontent.com/s/jm3h1hvw32l7ur5/floor2.png?dl=1',
+	        roomColor: '#937a5c',
+	        corredorColor: '#937a5c',
 	        radius: 6,
 	        initialVel: 1.3,
-	        trapColor: 'https://dl.dropboxusercontent.com/s/opbei51tsw3toe3/blackHole.png?dl=1'
+	        // trapColor: 'https://dl.dropboxusercontent.com/s/opbei51tsw3toe3/blackHole.png?dl=1'
+	        trapColor: '#2a1919'
 	    };
 	};
 
@@ -23050,7 +23052,14 @@
 	function positionEdit(action, state) {
 	    var player = JSON.parse(JSON.stringify(state));
 	    if (state.position && action.payload.currentPlace) {
+
 	        var level = JSON.parse(JSON.stringify(action.payload.level));
+	        if (player.life <= 0) {
+	            player.location = level.beginning;
+	            player.life = 200;
+	            player.neighbors = getNeighbors(level.beginning, level.paths, level.rooms);
+	            return player;
+	        }
 	        var key = action.payload.key;
 	        var currentPlace = action.payload.currentPlace;
 	        var oldPos = JSON.parse(JSON.stringify(player.position));
@@ -23453,27 +23462,32 @@
 	        neutral: {
 	            name: 'neutral',
 	            deceleration: 0.2,
-	            texture: 'https://dl.dropboxusercontent.com/s/tfwhm1wdq0ashmh/neutralElement.png?dl=1'
+	            // texture : 'https://dl.dropboxusercontent.com/s/tfwhm1wdq0ashmh/neutralElement.png?dl=1'
+	            texture: '#b9adac'
 	        },
 	        fire: {
 	            name: 'fire',
 	            deceleration: 0.2,
-	            texture: 'https://dl.dropboxusercontent.com/s/0zgn3mcncd7gq9x/fireElement.png?dl=1'
+	            // texture: 'https://dl.dropboxusercontent.com/s/0zgn3mcncd7gq9x/fireElement.png?dl=1'
+	            texture: '#df332a'
 	        },
 	        ice: {
 	            name: 'ice',
 	            deceleration: 0.16,
-	            texture: 'https://dl.dropboxusercontent.com/s/i438d2yx9tags7r/iceElement.png?dl=1'
+	            // texture: 'https://dl.dropboxusercontent.com/s/i438d2yx9tags7r/iceElement.png?dl=1'
+	            texture: '#2ad3df'
 	        },
 	        steel: {
 	            name: 'steel',
 	            deceleration: 0.4,
-	            texture: 'https://dl.dropboxusercontent.com/s/1rjmhc45tp2tt2m/steelElement.png?dl=1'
+	            // texture: 'https://dl.dropboxusercontent.com/s/1rjmhc45tp2tt2m/steelElement.png?dl=1'
+	            texture: '#7a8e90'
 	        },
 	        diamond: {
 	            name: 'diamond',
 	            deceleration: 0.23,
-	            texture: 'https://dl.dropboxusercontent.com/s/0a6kiy3i0x16s0f/diamondElement.png?dl=1'
+	            // texture: 'https://dl.dropboxusercontent.com/s/0a6kiy3i0x16s0f/diamondElement.png?dl=1'
+	            texture: '#dcdfd8'
 	        }
 	    };
 	};
