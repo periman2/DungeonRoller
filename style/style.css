@@ -1,7 +1,7 @@
 body {
-    /*background: grey;*/
-    /*background-image: url('dungeon.png')*/
-    background-image: url('https://dl.dropboxusercontent.com/s/5ovlh1nn4hi9t3w/background.png?dl=1');
+    background-image: url('https://dl.dropboxusercontent.com/s/cp3j1kpmpt2diye/background2.png?dl=1');
+    color: #d7d4d1;
+    font-family: 'Amatic SC';
 }
 
 canvas {
@@ -12,10 +12,25 @@ canvas {
     margin-left: auto;
     margin-right: auto;
     display: block;
-    /*background-image: url('dungon.png')*/
 }
 
-div {
-    color: white;
+h1 {
+    font-weight: bold;
+    font-size: 35px;
+    text-align: center;
 }
 
+.settings {
+    /*background: red;*/
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.settings div {
+    width: 20%;
+    display: inline-block;
+}
