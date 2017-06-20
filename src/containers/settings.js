@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 class Settings extends Component {
     render() {
         let elem = null;
-        let enemy = null;
+        let enemy = <div><p>Wall: 0</p></div>;
         let life = 0;
         let XP = 1;
         let location = null;
@@ -28,10 +28,10 @@ class Settings extends Component {
                 <div className='settings'>
                     <div><p>Element: {elem}</p></div>
                     <div><p>Life: {life}</p></div>
-                    <div><a href="https://github.com/periman2/DungeonRoller" target='_blank'><i className="fa fa-github-square fa-2x" aria-hidden="true"></i></a></div>
                     <div><p>XP: {XP}</p></div>
                     {enemy}
                     {location}
+                    <div><a href="https://github.com/periman2/DungeonRoller" target='_blank'><i className="fa fa-github-square fa-2x" aria-hidden="true"></i></a></div>
                 </div>
             </div>
         )
