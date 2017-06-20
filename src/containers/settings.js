@@ -28,6 +28,7 @@ class Settings extends Component {
                 <div className='settings'>
                     <div><p>Element: {elem}</p></div>
                     <div><p>Life: {life}</p></div>
+                    <div><a href="https://github.com/periman2/DungeonRoller" target='_blank'><i className="fa fa-github-square fa-2x" aria-hidden="true"></i></a></div>
                     <div><p>XP: {XP}</p></div>
                     {enemy}
                     {location}

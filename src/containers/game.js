@@ -921,6 +921,7 @@ class Game extends Component {
                 {this.props.inst.on && <Instructions />}
                 <canvas id='mycanvas' height={this.props.gameInfo.canvasHeight} width={this.props.gameInfo.canvasWidth}>
                 </canvas>`
+                
                 <button className='help' onClick={()=>{this.props.changeInst({on: true})}}>Help</button>
             </div>
         )

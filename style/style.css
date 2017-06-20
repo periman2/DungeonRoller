@@ -89,15 +89,22 @@ h1 {
 }
 
 .help {
+    position: relative;
     background: transparent;
     font-family: 'Amatic SC';
     color: #d7d4d1;
     font-size: 30px;
     border: none;
     border-bottom: 2px solid #d7d4d1;
+    text-align: center;
+    margin-left: 400px;
 }
 
 .help:hover {
     color: white;
     cursor: pointer;
+}
+
+i {
+    /*background: white;*/
 }
