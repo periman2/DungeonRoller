@@ -135,8 +135,6 @@ function handleCollision(player, newPos, currentPlace, neighbors){
         collisionWithTrap: false,
         current: currentPlace
     };
-    //now I will have to return if I find any of the following true
-    // console.log(player);
 
     //Collision with walls when in corridors
     neighbors = neighbors.map((n) => {

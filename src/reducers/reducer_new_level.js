@@ -6,7 +6,6 @@ export default function NewLevel(state = [], action){
         case MAKE_LEVEL:
         return [action.payload, ...state];
         case CHANGE_LEVEL:
-        // console.log("these are the changed lavels", action.payload);
         return action.payload
     }
     return state;

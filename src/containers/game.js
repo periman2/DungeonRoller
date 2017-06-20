@@ -1,9 +1,10 @@
 import React , { Component } from 'react';
+import Instructions from './instructions';
 import { connect } from 'react-redux';
 import { changePlayerInfo } from '../actions/player_move_action';
 import { makeNewLevel } from '../actions/create_level_action';
 import { changeLevels } from '../actions/alter_level_action';
-import { MoveScreen } from '../actions/move_screen_action';
+import changeInst from '../actions/action_handle_inst';
 import { bindActionCreators } from 'redux';
 
 
@@ -911,13 +912,17 @@ class Game extends Component {
         this.getInitialPosition(levels[0]);
         this.drawCurrentRoom(levels[0].beginning);
         document.addEventListener("keydown", this.handleKeyDown, false);
-        this.props.moveScreen({x: -levels[0].beginning.X, y: -levels[0].beginning.Y})
+        // this.props.moveScreen({x: -levels[0].beginning.X, y: -levels[0].beginning.Y})
     }
     render() {
         this.renderPosition();
         return (
-            <canvas id='mycanvas' height={this.props.gameInfo.canvasHeight} width={this.props.gameInfo.canvasWidth}>
-            </canvas>
+            <div>
+                {this.props.inst.on && <Instructions />}
+                <canvas id='mycanvas' height={this.props.gameInfo.canvasHeight} width={this.props.gameInfo.canvasWidth}>
+                </canvas>`
+                <button className='help' onClick={()=>{this.props.changeInst({on: true})}}>Help</button>
+            </div>
         )
     }
 }
@@ -928,7 +933,7 @@ function mapStateToProps(state){
         player: state.player,
         levels: state.levels,
         elements: state.elements,
-        screenLocation: state.screenLocation
+        inst: state.inst
     };
 };
 
@@ -938,7 +943,7 @@ function mapDispatchToProps(dispatch) {
             changePlayerInfo: changePlayerInfo, 
             makeNewLevel: makeNewLevel, 
             changeLevels: changeLevels,
-            moveScreen: MoveScreen
+            changeInst: changeInst
         },
          dispatch);
 };

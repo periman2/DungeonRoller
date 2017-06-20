@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import GameInfo from './game-info';
 import Player from './reducer_player_info';
 import Levels from './reducer_new_level';
-import ScreenLocation from './reducer_move_screen';
+import handleInst from './reducer_handle_inst';
 import Elements from './reducer_elements';
 
 const rootReducer = combineReducers({
@@ -10,7 +10,7 @@ const rootReducer = combineReducers({
   player: Player,
   levels: Levels,
   elements: Elements,
-  screenLocation: ScreenLocation
+  inst: handleInst
 });
 
 export default rootReducer;
